@@ -1,0 +1,2231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ThreadChaser</title>
+  <style>
+    /* =====================================================================
+       CSS VARIABLES & RESET
+    ===================================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:            #f2f2f7;
+      --card:          #ffffff;
+      --card2:         #f2f2f7;
+      --border:        #e0e0e5;
+      --text:          #1c1c1e;
+      --text2:         #6c6c70;
+      --text3:         #aeaeb2;
+      --accent:        #1a3f8c;
+      --accent2:       #2563eb;
+      --green:         #22c55e;
+      --green-bg:      #dcfce7;
+      --blue:          #3b82f6;
+      --blue-bg:       #dbeafe;
+      --orange:        #f97316;
+      --orange-bg:     #ffedd5;
+      --red:           #ef4444;
+      --red-bg:        #fee2e2;
+      --shadow:        0 2px 8px rgba(0,0,0,.07);
+      --shadow-sm:     0 1px 4px rgba(0,0,0,.05);
+      --radius:        12px;
+      --radius-sm:     8px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:    #1c1c1e;
+        --card:  #2c2c2e;
+        --card2: #3a3a3c;
+        --border:#3a3a3c;
+        --text:  #f5f5f7;
+        --text2: #aeaeb2;
+        --text3: #636366;
+        --green-bg:  #052e16;
+        --blue-bg:   #1e3a5f;
+        --orange-bg: #431407;
+        --red-bg:    #450a0a;
+      }
+    }
+
+    html, body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 15px;
+    }
+
+    /* =====================================================================
+       LAYOUT
+    ===================================================================== */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .app-header h1 {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .header-left, .header-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      color: var(--accent2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: background .15s;
+    }
+    .icon-btn:hover { background: var(--card2); }
+    .icon-btn:disabled { color: var(--text3); cursor: default; }
+    .icon-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .main-content {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 16px 16px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* =====================================================================
+       CARDS
+    ===================================================================== */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    /* =====================================================================
+       SEGMENTED CONTROL
+    ===================================================================== */
+    .seg-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .seg-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .seg-label svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .seg-row { display: flex; gap: 12px; }
+
+    .segmented {
+      display: flex;
+      background: var(--card2);
+      border-radius: 8px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .seg-btn {
+      flex: 1;
+      padding: 5px 0;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text2);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .seg-btn.active {
+      background: var(--card);
+      color: var(--text);
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0,0,0,.15);
+    }
+
+    /* =====================================================================
+       INPUT FIELDS
+    ===================================================================== */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .input-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: .3px;
+    }
+
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card2);
+      border-radius: var(--radius-sm);
+      padding: 9px 12px;
+      border: 1.5px solid transparent;
+      transition: border-color .2s;
+    }
+    .input-wrap.valid { border-color: rgba(59,130,246,.45); }
+
+    .input-wrap input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      font-family: "SF Mono", "Fira Code", monospace;
+      color: var(--text);
+    }
+
+    .input-unit {
+      font-size: 13px;
+      color: var(--text2);
+      white-space: nowrap;
+    }
+
+    .input-hint {
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+
+    /* =====================================================================
+       TOLERANCE SLIDER
+    ===================================================================== */
+    .tolerance-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .tolerance-value {
+      font-size: 12px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--card2);
+      outline: none;
+      margin-top: 6px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid currentColor;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    }
+
+    /* =====================================================================
+       SEARCH BUTTON
+    ===================================================================== */
+    .search-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: var(--radius);
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity .15s, transform .1s;
+      box-shadow: 0 2px 8px rgba(37,99,235,.3);
+    }
+    .search-btn:hover { opacity: .92; transform: translateY(-1px); }
+    .search-btn:active { transform: translateY(0); }
+    .search-btn:disabled {
+      background: linear-gradient(90deg, #ccc, #bbb);
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+      opacity: 1;
+    }
+    .search-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* =====================================================================
+       ERROR BANNER
+    ===================================================================== */
+    .error-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: rgba(249,115,22,.1);
+      border: 1px solid rgba(249,115,22,.3);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+    }
+    .error-banner svg { width: 18px; height: 18px; fill: none; stroke: var(--orange); stroke-width: 2; flex-shrink: 0; }
+
+    /* =====================================================================
+       RESULTS
+    ===================================================================== */
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2px;
+    }
+
+    .results-header h2 { font-size: 16px; font-weight: 600; }
+
+    .within-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: white;
+      background: var(--green);
+      padding: 3px 10px;
+      border-radius: 99px;
+    }
+
+    .results-section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      padding: 0 2px;
+      margin-bottom: 4px;
+    }
+
+    .result-row {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: transform .12s, box-shadow .12s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .result-row:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+
+    .result-row.best {
+      border-color: rgba(34,197,94,.3);
+      background: rgba(34,197,94,.05);
+      box-shadow: 0 2px 8px rgba(34,197,94,.1);
+    }
+    .result-row.best-blue {
+      border-color: rgba(59,130,246,.3);
+      background: rgba(59,130,246,.05);
+    }
+    .result-row.best-orange {
+      border-color: rgba(249,115,22,.3);
+      background: rgba(249,115,22,.05);
+    }
+    .result-row.best-red {
+      border-color: rgba(239,68,68,.3);
+      background: rgba(239,68,68,.05);
+    }
+
+    .std-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      width: 36px;
+      flex-shrink: 0;
+    }
+    .std-abbrev {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .std-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .result-info { flex: 1; min-width: 0; }
+    .result-name {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .best-check {
+      font-size: 12px;
+    }
+    .result-dims {
+      font-size: 11px;
+      color: var(--text2);
+      margin-top: 2px;
+    }
+
+    .result-pct {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .result-pct .pct-num {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .result-pct .pct-label {
+      font-size: 9px;
+      color: var(--text2);
+    }
+
+    .chevron { color: var(--text3); font-size: 12px; flex-shrink: 0; }
+
+    /* =====================================================================
+       NO RESULTS
+    ===================================================================== */
+    .no-results {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .no-results .icon { font-size: 40px; margin-bottom: 10px; }
+    .no-results h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+    .no-results p { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+    /* =====================================================================
+       MODAL OVERLAY
+    ===================================================================== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.4);
+      z-index: 200;
+      align-items: flex-end;
+      justify-content: center;
+      animation: fadeIn .15s ease;
+    }
+    .modal-overlay.open { display: flex; }
+
+    @media (min-width: 600px) {
+      .modal-overlay { align-items: center; }
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .modal-sheet {
+      background: var(--card);
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 680px;
+      max-height: 92vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: slideUp .2s ease;
+    }
+
+    @media (min-width: 600px) {
+      .modal-sheet {
+        border-radius: 20px;
+        max-height: 85vh;
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .modal-title { font-size: 17px; font-weight: 600; }
+    .modal-done {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--accent2);
+      padding: 4px 8px;
+    }
+
+    .modal-body {
+      overflow-y: auto;
+      flex: 1;
+      padding: 16px 18px;
+    }
+
+    /* =====================================================================
+       SETTINGS MODAL
+    ===================================================================== */
+    .settings-section {
+      margin-bottom: 24px;
+    }
+    .settings-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 10px;
+    }
+    .settings-section-footer {
+      font-size: 11px;
+      color: var(--text3);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+    .toggle-row:last-child { border-bottom: none; }
+
+    .toggle-info { flex: 1; min-width: 0; }
+    .toggle-name {
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .toggle-desc { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+    .metric-pill {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 99px;
+    }
+    .metric-pill.metric { background: var(--blue-bg); color: var(--blue); }
+    .metric-pill.imperial { background: var(--orange-bg); color: var(--orange); }
+
+    /* Toggle switch */
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 13px;
+      background: var(--border);
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      transition: transform .2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .toggle-switch input:checked + .toggle-track { background: var(--accent2); }
+    .toggle-switch input:checked + .toggle-track::after { transform: translateX(18px); }
+
+    /* =====================================================================
+       REFERENCE MODAL TABS
+    ===================================================================== */
+    .ref-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+    .ref-tabs::-webkit-scrollbar { display: none; }
+
+    .ref-tab {
+      flex-shrink: 0;
+      padding: 5px 12px;
+      border-radius: 99px;
+      border: 1.5px solid var(--border);
+      background: none;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .ref-tab.active {
+      background: var(--accent2);
+      border-color: var(--accent2);
+      color: white;
+    }
+
+    .ref-table-wrap { overflow-x: auto; }
+
+    .ref-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      min-width: 520px;
+    }
+    .ref-table th {
+      text-align: left;
+      padding: 7px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: var(--text2);
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+    .ref-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .ref-table tr:last-child td { border-bottom: none; }
+    .ref-table tr:hover td { background: var(--card2); }
+    .ref-table .size-col { font-weight: 600; }
+
+    /* =====================================================================
+       DETAIL MODAL
+    ===================================================================== */
+    .detail-header {
+      padding: 24px 18px 18px;
+      color: white;
+      text-align: center;
+      margin: -16px -18px 16px;
+      border-radius: 12px 12px 0 0;
+    }
+    .detail-header h2 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+    .detail-header .std-name { font-size: 14px; opacity: .85; margin-bottom: 12px; }
+    .detail-badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .detail-badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.2);
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .detail-section {
+      margin-bottom: 16px;
+    }
+    .detail-section-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--text2);
+      margin-bottom: 10px;
+    }
+
+    .detail-card {
+      background: var(--card2);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+    }
+
+    .match-row {
+      margin-bottom: 14px;
+    }
+    .match-row:last-child { margin-bottom: 0; }
+    .match-row-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: 8px;
+    }
+    .match-cols {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr 1fr;
+      gap: 4px;
+      align-items: center;
+    }
+    .match-col { text-align: center; }
+    .match-col-label { font-size: 10px; color: var(--text2); margin-bottom: 2px; }
+    .match-col-value { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .match-arrow { font-size: 12px; text-align: center; }
+
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .spec-row:last-child { border-bottom: none; }
+    .spec-label { color: var(--text2); }
+    .spec-value { font-weight: 500; font-variant-numeric: tabular-nums; }
+
+    .overall-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      margin-top: 12px;
+    }
+    .overall-label { font-size: 13px; font-weight: 600; }
+    .overall-sub { font-size: 10px; color: var(--text2); margin-top: 2px; }
+    .overall-pct { font-size: 22px; font-weight: 700; }
+    .overall-match-label { font-size: 10px; color: var(--text2); text-align: right; }
+
+    /* =====================================================================
+       PROFILE DIAGRAM (SVG)
+    ===================================================================== */
+    .profile-svg-wrap {
+      background: var(--card2);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      text-align: center;
+    }
+    .profile-svg-wrap svg {
+      max-width: 100%;
+    }
+    .profile-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .profile-info-item {
+      background: var(--card2);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+    .profile-info-label { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: .3px; }
+    .profile-info-value { font-size: 13px; font-weight: 600; margin-top: 2px; }
+
+    /* =====================================================================
+       COLOR HELPERS
+    ===================================================================== */
+    .c-green  { color: var(--green); }
+    .c-blue   { color: var(--blue); }
+    .c-orange { color: var(--orange); }
+    .c-red    { color: var(--red); }
+
+    /* =====================================================================
+       UTILITIES
+    ===================================================================== */
+    .hidden { display: none !important; }
+    .mt4  { margin-top: 4px; }
+    .mt8  { margin-top: 8px; }
+    .mt12 { margin-top: 12px; }
+
+    /* =====================================================================
+       RESPONSIVE
+    ===================================================================== */
+    @media (max-width: 440px) {
+      .seg-row { flex-direction: column; }
+      .match-cols { grid-template-columns: 1fr auto 1fr; }
+      .match-cols .match-col:last-child { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- =====================================================================
+     HEADER
+===================================================================== -->
+<header class="app-header">
+  <div class="header-left">
+    <button class="icon-btn" id="btn-reset" title="Reset" disabled>
+      <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-5"/></svg>
+    </button>
+  </div>
+  <h1>ThreadChaser</h1>
+  <div class="header-right">
+    <button class="icon-btn" id="btn-reference" title="Reference Tables">
+      <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    </button>
+    <button class="icon-btn" id="btn-settings" title="Settings">
+      <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- =====================================================================
+     MAIN CONTENT
+===================================================================== -->
+<main class="main-content">
+
+  <!-- Input Card -->
+  <div class="card" id="input-card">
+
+    <!-- Units + Thread Type row -->
+    <div class="seg-row">
+      <div class="seg-group">
+        <span class="seg-label">
+          <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Units
+        </span>
+        <div class="segmented" id="unit-seg">
+          <button class="seg-btn active" data-unit="mm">mm</button>
+          <button class="seg-btn" data-unit="inch">Inch</button>
+          <button class="seg-btn" data-unit="tpi">TPI</button>
+        </div>
+      </div>
+      <div class="seg-group">
+        <span class="seg-label">
+          <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          Thread Type
+        </span>
+        <div class="segmented" id="type-seg">
+          <button class="seg-btn active" data-type="external">External</button>
+          <button class="seg-btn" data-type="internal">Internal</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider mt8"></div>
+
+    <!-- External: major diameter field -->
+    <div id="field-major" class="input-group mt8">
+      <div class="input-label" id="label-major">Major Diameter (mm)</div>
+      <div class="input-wrap" id="wrap-major">
+        <input type="number" inputmode="decimal" id="inp-major" placeholder="e.g. 10.0" step="any" min="0" />
+        <span class="input-unit" id="unit-major">mm</span>
+      </div>
+    </div>
+
+    <!-- Internal: minor diameter field -->
+    <div id="field-minor" class="input-group mt8 hidden">
+      <div class="input-label">Minor Diameter (mm)</div>
+      <div class="input-wrap" id="wrap-minor">
+        <input type="number" inputmode="decimal" id="inp-minor" placeholder="e.g. 8.376" step="any" min="0" />
+        <span class="input-unit">mm</span>
+      </div>
+      <div class="input-hint">Measure the smallest diameter of the thread bore</div>
+    </div>
+
+    <!-- Pitch field -->
+    <div id="field-pitch" class="input-group mt8">
+      <div class="input-label" id="label-pitch">Pitch (mm)</div>
+      <div class="input-wrap" id="wrap-pitch">
+        <input type="number" inputmode="decimal" id="inp-pitch" placeholder="e.g. 1.25" step="any" min="0" />
+        <span class="input-unit" id="unit-pitch">mm</span>
+      </div>
+    </div>
+
+    <!-- TPI field (shown when unit = mm or inch, as extra input) -->
+    <div id="field-tpi" class="input-group mt8">
+      <div class="input-label">Threads per Inch (TPI)</div>
+      <div class="input-wrap" id="wrap-tpi">
+        <input type="number" inputmode="decimal" id="inp-tpi" placeholder="e.g. 20" step="any" min="0" />
+        <span class="input-unit">TPI</span>
+      </div>
+    </div>
+
+    <!-- Tolerance slider -->
+    <div class="input-group mt8">
+      <div class="tolerance-header">
+        <span class="input-label">
+          <svg style="width:12px;height:12px;vertical-align:-1px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Tolerance
+        </span>
+        <span class="tolerance-value" id="tol-display" style="color:var(--green)">±5%</span>
+      </div>
+      <input type="range" id="tol-slider" min="1" max="15" value="5" step="1" style="color:var(--green)" />
+    </div>
+  </div>
+
+  <!-- Error Banner -->
+  <div class="error-banner hidden" id="error-banner">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span id="error-text"></span>
+  </div>
+
+  <!-- Search Button -->
+  <button class="search-btn" id="btn-search" disabled>
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Identify Thread
+  </button>
+
+  <!-- Results Section -->
+  <div id="results-section" class="hidden">
+    <div class="results-header">
+      <h2>Results</h2>
+      <span class="within-badge hidden" id="within-badge"></span>
+    </div>
+    <div id="results-list" class="mt12" style="display:flex;flex-direction:column;gap:10px;"></div>
+  </div>
+
+</main>
+
+<!-- =====================================================================
+     SETTINGS MODAL
+===================================================================== -->
+<div class="modal-overlay" id="modal-settings">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <span class="modal-title">Settings</span>
+      <button class="modal-done" id="close-settings">Done</button>
+    </div>
+    <div class="modal-body" id="settings-body">
+      <!-- populated by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================================
+     REFERENCE MODAL
+===================================================================== -->
+<div class="modal-overlay" id="modal-reference">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <span class="modal-title">Reference Tables</span>
+      <button class="modal-done" id="close-reference">Done</button>
+    </div>
+    <div class="modal-body">
+      <div class="ref-tabs" id="ref-tabs"></div>
+      <div class="ref-table-wrap">
+        <table class="ref-table" id="ref-table">
+          <thead id="ref-thead"></thead>
+          <tbody id="ref-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================================
+     THREAD DETAIL MODAL
+===================================================================== -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal-sheet">
+    <div class="modal-header" style="border-bottom:none;padding-bottom:8px;">
+      <span></span>
+      <button class="modal-done" id="close-detail">Done</button>
+    </div>
+    <div class="modal-body" id="detail-body" style="padding-top:0;">
+      <!-- populated by JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* =======================================================================
+   SECTION 2 — THREAD DATABASE
+   All values in mm. pitch = mm pitch (TPI converted via 25.4/TPI).
+======================================================================= */
+const DB = [
+  // Metric Coarse (ISO 724)
+  {name:"1.6",   D:1.600,  p:0.350, std:"M",    Dp:1.373,  Dm:1.171},
+  {name:"2",     D:2.000,  p:0.400, std:"M",    Dp:1.740,  Dm:1.509},
+  {name:"2.5",   D:2.500,  p:0.450, std:"M",    Dp:2.208,  Dm:1.948},
+  {name:"3",     D:3.000,  p:0.500, std:"M",    Dp:2.675,  Dm:2.387},
+  {name:"3.5",   D:3.500,  p:0.600, std:"M",    Dp:3.110,  Dm:2.764},
+  {name:"4",     D:4.000,  p:0.700, std:"M",    Dp:3.545,  Dm:3.141},
+  {name:"5",     D:5.000,  p:0.800, std:"M",    Dp:4.480,  Dm:4.019},
+  {name:"6",     D:6.000,  p:1.000, std:"M",    Dp:5.350,  Dm:4.773},
+  {name:"7",     D:7.000,  p:1.000, std:"M",    Dp:6.350,  Dm:5.773},
+  {name:"8",     D:8.000,  p:1.250, std:"M",    Dp:7.188,  Dm:6.466},
+  {name:"10",    D:10.000, p:1.500, std:"M",    Dp:9.026,  Dm:8.160},
+  {name:"12",    D:12.000, p:1.750, std:"M",    Dp:10.863, Dm:9.853},
+  {name:"14",    D:14.000, p:2.000, std:"M",    Dp:12.701, Dm:11.546},
+  {name:"16",    D:16.000, p:2.000, std:"M",    Dp:14.701, Dm:13.546},
+  {name:"18",    D:18.000, p:2.500, std:"M",    Dp:16.376, Dm:14.933},
+  {name:"20",    D:20.000, p:2.500, std:"M",    Dp:18.376, Dm:16.933},
+  {name:"22",    D:22.000, p:2.500, std:"M",    Dp:20.376, Dm:18.933},
+  {name:"24",    D:24.000, p:3.000, std:"M",    Dp:22.051, Dm:20.319},
+  {name:"27",    D:27.000, p:3.000, std:"M",    Dp:25.051, Dm:23.319},
+  {name:"30",    D:30.000, p:3.500, std:"M",    Dp:27.727, Dm:25.706},
+  {name:"33",    D:33.000, p:3.500, std:"M",    Dp:30.727, Dm:28.706},
+  {name:"36",    D:36.000, p:4.000, std:"M",    Dp:33.402, Dm:31.093},
+  {name:"39",    D:39.000, p:4.000, std:"M",    Dp:36.402, Dm:34.093},
+  {name:"42",    D:42.000, p:4.500, std:"M",    Dp:39.077, Dm:36.479},
+  {name:"45",    D:45.000, p:4.500, std:"M",    Dp:42.077, Dm:39.479},
+  {name:"48",    D:48.000, p:5.000, std:"M",    Dp:44.752, Dm:41.866},
+  {name:"52",    D:52.000, p:5.000, std:"M",    Dp:48.752, Dm:45.866},
+  {name:"56",    D:56.000, p:5.500, std:"M",    Dp:52.428, Dm:49.252},
+  {name:"60",    D:60.000, p:5.500, std:"M",    Dp:56.428, Dm:53.252},
+  {name:"64",    D:64.000, p:6.000, std:"M",    Dp:60.103, Dm:56.639},
+
+  // Metric Fine (ISO 724)
+  {name:"1 x 0.2",    D:1.000,  p:0.200, std:"MF", Dp:0.870,  Dm:0.755},
+  {name:"1.2 x 0.2",  D:1.200,  p:0.200, std:"MF", Dp:1.070,  Dm:0.955},
+  {name:"1.4 x 0.2",  D:1.400,  p:0.200, std:"MF", Dp:1.270,  Dm:1.155},
+  {name:"1.6 x 0.2",  D:1.600,  p:0.200, std:"MF", Dp:1.470,  Dm:1.355},
+  {name:"2 x 0.25",   D:2.000,  p:0.250, std:"MF", Dp:1.838,  Dm:1.693},
+  {name:"2.5 x 0.35", D:2.500,  p:0.350, std:"MF", Dp:2.273,  Dm:2.071},
+  {name:"3 x 0.35",   D:3.000,  p:0.350, std:"MF", Dp:2.773,  Dm:2.571},
+  {name:"4 x 0.5",    D:4.000,  p:0.500, std:"MF", Dp:3.675,  Dm:3.387},
+  {name:"5 x 0.5",    D:5.000,  p:0.500, std:"MF", Dp:4.675,  Dm:4.387},
+  {name:"6 x 0.75",   D:6.000,  p:0.750, std:"MF", Dp:5.513,  Dm:5.080},
+  {name:"8 x 1.0",    D:8.000,  p:1.000, std:"MF", Dp:7.350,  Dm:6.773},
+  {name:"10 x 1.0",   D:10.000, p:1.000, std:"MF", Dp:9.350,  Dm:8.773},
+  {name:"10 x 1.25",  D:10.000, p:1.250, std:"MF", Dp:9.188,  Dm:8.466},
+  {name:"12 x 1.25",  D:12.000, p:1.250, std:"MF", Dp:11.188, Dm:10.466},
+  {name:"12 x 1.5",   D:12.000, p:1.500, std:"MF", Dp:11.026, Dm:10.160},
+  {name:"14 x 1.5",   D:14.000, p:1.500, std:"MF", Dp:13.026, Dm:12.160},
+  {name:"16 x 1.5",   D:16.000, p:1.500, std:"MF", Dp:15.026, Dm:14.160},
+  {name:"18 x 1.5",   D:18.000, p:1.500, std:"MF", Dp:17.026, Dm:16.160},
+  {name:"20 x 1.5",   D:20.000, p:1.500, std:"MF", Dp:19.026, Dm:18.160},
+  {name:"22 x 1.5",   D:22.000, p:1.500, std:"MF", Dp:21.026, Dm:20.160},
+  {name:"24 x 2.0",   D:24.000, p:2.000, std:"MF", Dp:22.701, Dm:21.546},
+  {name:"27 x 2.0",   D:27.000, p:2.000, std:"MF", Dp:25.701, Dm:24.546},
+  {name:"30 x 2.0",   D:30.000, p:2.000, std:"MF", Dp:28.701, Dm:27.546},
+  {name:"33 x 2.0",   D:33.000, p:2.000, std:"MF", Dp:31.701, Dm:30.546},
+  {name:"36 x 3.0",   D:36.000, p:3.000, std:"MF", Dp:34.051, Dm:32.319},
+  {name:"39 x 3.0",   D:39.000, p:3.000, std:"MF", Dp:37.051, Dm:35.319},
+  {name:"42 x 3.0",   D:42.000, p:3.000, std:"MF", Dp:40.051, Dm:38.319},
+  {name:"45 x 3.0",   D:45.000, p:3.000, std:"MF", Dp:43.051, Dm:41.319},
+  {name:"48 x 3.0",   D:48.000, p:3.000, std:"MF", Dp:46.051, Dm:44.319},
+
+  // UNC
+  {name:"#1-64",    D:1.854,  p:0.397, std:"UNC", Dp:1.598,   Dm:1.425},
+  {name:"#2-56",    D:2.184,  p:0.454, std:"UNC", Dp:1.890,   Dm:1.695},
+  {name:"#3-48",    D:2.515,  p:0.529, std:"UNC", Dp:2.172,   Dm:1.941},
+  {name:"#4-40",    D:2.845,  p:0.635, std:"UNC", Dp:2.433,   Dm:2.156},
+  {name:"#5-40",    D:3.175,  p:0.635, std:"UNC", Dp:2.764,   Dm:2.487},
+  {name:"#6-32",    D:3.505,  p:0.794, std:"UNC", Dp:2.990,   Dm:2.647},
+  {name:"#8-32",    D:4.166,  p:0.794, std:"UNC", Dp:3.650,   Dm:3.307},
+  {name:"#10-24",   D:4.826,  p:1.058, std:"UNC", Dp:4.083,   Dm:3.632},
+  {name:"#12-24",   D:5.486,  p:1.058, std:"UNC", Dp:4.743,   Dm:4.292},
+  {name:"1/4-20",   D:6.350,  p:1.270, std:"UNC", Dp:5.461,   Dm:4.851},
+  {name:"5/16-18",  D:7.938,  p:1.411, std:"UNC", Dp:6.934,   Dm:6.223},
+  {name:"3/8-16",   D:9.525,  p:1.588, std:"UNC", Dp:8.376,   Dm:7.513},
+  {name:"7/16-14",  D:11.113, p:1.814, std:"UNC", Dp:9.771,   Dm:8.737},
+  {name:"1/2-13",   D:12.700, p:1.954, std:"UNC", Dp:11.239,  Dm:10.084},
+  {name:"9/16-12",  D:14.288, p:2.117, std:"UNC", Dp:12.667,  Dm:11.356},
+  {name:"5/8-11",   D:15.875, p:2.309, std:"UNC", Dp:14.095,  Dm:12.628},
+  {name:"3/4-10",   D:19.050, p:2.540, std:"UNC", Dp:16.993,  Dm:15.278},
+  {name:"7/8-9",    D:22.225, p:2.822, std:"UNC", Dp:19.860,  Dm:17.866},
+  {name:"1-8",      D:25.400, p:3.175, std:"UNC", Dp:22.728,  Dm:20.450},
+  {name:"1-1/8-7",  D:28.575, p:3.629, std:"UNC", Dp:25.474,  Dm:22.813},
+  {name:"1-1/4-7",  D:31.750, p:3.629, std:"UNC", Dp:28.648,  Dm:25.988},
+  {name:"1-3/8-6",  D:34.925, p:4.233, std:"UNC", Dp:31.293,  Dm:28.118},
+  {name:"1-1/2-6",  D:38.100, p:4.233, std:"UNC", Dp:34.468,  Dm:31.293},
+
+  // UNF
+  {name:"#0-80",    D:1.524,  p:0.318, std:"UNF", Dp:1.318,   Dm:1.181},
+  {name:"#1-72",    D:1.854,  p:0.353, std:"UNF", Dp:1.626,   Dm:1.473},
+  {name:"#2-64",    D:2.184,  p:0.397, std:"UNF", Dp:1.928,   Dm:1.755},
+  {name:"#3-56",    D:2.515,  p:0.454, std:"UNF", Dp:2.220,   Dm:2.026},
+  {name:"#4-48",    D:2.845,  p:0.529, std:"UNF", Dp:2.502,   Dm:2.271},
+  {name:"#5-44",    D:3.175,  p:0.577, std:"UNF", Dp:2.799,   Dm:2.541},
+  {name:"#6-40",    D:3.505,  p:0.635, std:"UNF", Dp:3.094,   Dm:2.817},
+  {name:"#8-36",    D:4.166,  p:0.706, std:"UNF", Dp:3.708,   Dm:3.404},
+  {name:"#10-32",   D:4.826,  p:0.794, std:"UNF", Dp:4.310,   Dm:3.967},
+  {name:"#12-28",   D:5.486,  p:0.907, std:"UNF", Dp:4.893,   Dm:4.481},
+  {name:"1/4-28",   D:6.350,  p:0.907, std:"UNF", Dp:5.757,   Dm:5.344},
+  {name:"5/16-24",  D:7.938,  p:1.058, std:"UNF", Dp:7.194,   Dm:6.743},
+  {name:"3/8-24",   D:9.525,  p:1.058, std:"UNF", Dp:8.782,   Dm:8.331},
+  {name:"7/16-20",  D:11.113, p:1.270, std:"UNF", Dp:10.224,  Dm:9.614},
+  {name:"1/2-20",   D:12.700, p:1.270, std:"UNF", Dp:11.811,  Dm:11.201},
+  {name:"9/16-18",  D:14.288, p:1.411, std:"UNF", Dp:13.284,  Dm:12.573},
+  {name:"5/8-18",   D:15.875, p:1.411, std:"UNF", Dp:14.871,  Dm:14.160},
+  {name:"3/4-16",   D:19.050, p:1.588, std:"UNF", Dp:17.901,  Dm:17.038},
+  {name:"7/8-14",   D:22.225, p:1.814, std:"UNF", Dp:20.883,  Dm:19.849},
+  {name:"1-12",     D:25.400, p:2.117, std:"UNF", Dp:23.879,  Dm:22.568},
+  {name:"1-1/8-12", D:28.575, p:2.117, std:"UNF", Dp:27.054,  Dm:25.743},
+  {name:"1-1/4-12", D:31.750, p:2.117, std:"UNF", Dp:30.229,  Dm:28.918},
+  {name:"1-3/8-12", D:34.925, p:2.117, std:"UNF", Dp:33.404,  Dm:32.093},
+  {name:"1-1/2-12", D:38.100, p:2.117, std:"UNF", Dp:36.579,  Dm:35.268},
+
+  // BSP
+  {name:"1/16\"", D:7.723,  p:0.907, std:"BSP", Dp:7.142,  Dm:6.561},
+  {name:"1/8\"",  D:9.728,  p:0.907, std:"BSP", Dp:9.147,  Dm:8.566},
+  {name:"1/4\"",  D:13.157, p:1.337, std:"BSP", Dp:12.301, Dm:11.445},
+  {name:"3/8\"",  D:16.662, p:1.337, std:"BSP", Dp:15.806, Dm:14.950},
+  {name:"1/2\"",  D:20.955, p:1.814, std:"BSP", Dp:19.793, Dm:18.631},
+  {name:"5/8\"",  D:22.911, p:1.814, std:"BSP", Dp:21.749, Dm:20.587},
+  {name:"3/4\"",  D:26.441, p:1.814, std:"BSP", Dp:25.279, Dm:24.117},
+  {name:"7/8\"",  D:30.201, p:2.309, std:"BSP", Dp:28.731, Dm:27.261},
+  {name:"1\"",    D:33.249, p:2.309, std:"BSP", Dp:31.770, Dm:30.291},
+  {name:"1-1/4\"",D:41.910, p:2.309, std:"BSP", Dp:40.431, Dm:38.952},
+  {name:"1-1/2\"",D:47.803, p:2.309, std:"BSP", Dp:46.324, Dm:44.845},
+  {name:"2\"",    D:59.614, p:2.309, std:"BSP", Dp:58.135, Dm:56.656},
+
+  // BSW
+  {name:"1/8\"",   D:3.175,  p:0.635, std:"BSW", Dp:2.773,  Dm:2.371},
+  {name:"3/16\"",  D:4.762,  p:0.794, std:"BSW", Dp:4.252,  Dm:3.742},
+  {name:"1/4\"",   D:6.350,  p:1.270, std:"BSW", Dp:5.537,  Dm:4.724},
+  {name:"5/16\"",  D:7.938,  p:1.411, std:"BSW", Dp:7.034,  Dm:6.131},
+  {name:"3/8\"",   D:9.525,  p:1.588, std:"BSW", Dp:8.509,  Dm:7.492},
+  {name:"7/16\"",  D:11.113, p:1.814, std:"BSW", Dp:9.951,  Dm:8.789},
+  {name:"1/2\"",   D:12.700, p:2.117, std:"BSW", Dp:11.345, Dm:9.990},
+  {name:"9/16\"",  D:14.288, p:2.117, std:"BSW", Dp:12.932, Dm:11.577},
+  {name:"5/8\"",   D:15.875, p:2.309, std:"BSW", Dp:14.397, Dm:12.918},
+  {name:"3/4\"",   D:19.050, p:2.540, std:"BSW", Dp:17.424, Dm:15.798},
+  {name:"7/8\"",   D:22.225, p:2.822, std:"BSW", Dp:20.419, Dm:18.611},
+  {name:"1\"",     D:25.400, p:3.175, std:"BSW", Dp:23.368, Dm:21.335},
+  {name:"1-1/8\"", D:28.575, p:3.629, std:"BSW", Dp:26.252, Dm:23.929},
+  {name:"1-1/4\"", D:31.750, p:3.629, std:"BSW", Dp:29.427, Dm:27.104},
+  {name:"1-3/8\"", D:34.925, p:4.233, std:"BSW", Dp:32.216, Dm:29.506},
+  {name:"1-1/2\"", D:38.100, p:4.233, std:"BSW", Dp:35.391, Dm:32.681},
+  {name:"1-3/4\"", D:44.450, p:5.080, std:"BSW", Dp:41.198, Dm:37.947},
+  {name:"2\"",     D:50.800, p:5.080, std:"BSW", Dp:47.548, Dm:44.297},
+
+  // BSF
+  {name:"3/16\"",  D:4.762,  p:0.635, std:"BSF", Dp:4.360,  Dm:3.958},
+  {name:"1/4\"",   D:6.350,  p:0.907, std:"BSF", Dp:5.769,  Dm:5.188},
+  {name:"5/16\"",  D:7.938,  p:1.058, std:"BSF", Dp:7.260,  Dm:6.582},
+  {name:"3/8\"",   D:9.525,  p:1.270, std:"BSF", Dp:8.712,  Dm:7.899},
+  {name:"7/16\"",  D:11.113, p:1.411, std:"BSF", Dp:10.209, Dm:9.305},
+  {name:"1/2\"",   D:12.700, p:1.588, std:"BSF", Dp:11.684, Dm:10.668},
+  {name:"9/16\"",  D:14.288, p:1.588, std:"BSF", Dp:13.272, Dm:12.256},
+  {name:"5/8\"",   D:15.875, p:1.814, std:"BSF", Dp:14.713, Dm:13.551},
+  {name:"3/4\"",   D:19.050, p:2.117, std:"BSF", Dp:17.695, Dm:16.340},
+  {name:"7/8\"",   D:22.225, p:2.309, std:"BSF", Dp:20.747, Dm:19.269},
+  {name:"1\"",     D:25.400, p:2.540, std:"BSF", Dp:23.774, Dm:22.148},
+  {name:"1-1/8\"", D:28.575, p:2.822, std:"BSF", Dp:26.769, Dm:24.961},
+  {name:"1-1/4\"", D:31.750, p:2.822, std:"BSF", Dp:29.944, Dm:28.136},
+  {name:"1-1/2\"", D:38.100, p:3.175, std:"BSF", Dp:36.068, Dm:34.035},
+  {name:"1-3/4\"", D:44.450, p:3.629, std:"BSF", Dp:42.127, Dm:39.804},
+  {name:"2\"",     D:50.800, p:3.629, std:"BSF", Dp:48.477, Dm:46.154},
+
+  // BA
+  {name:"0",  D:6.000, p:1.000, std:"BA", Dp:5.378, Dm:4.756},
+  {name:"1",  D:5.300, p:0.900, std:"BA", Dp:4.740, Dm:4.180},
+  {name:"2",  D:4.700, p:0.810, std:"BA", Dp:4.196, Dm:3.692},
+  {name:"3",  D:4.100, p:0.730, std:"BA", Dp:3.647, Dm:3.194},
+  {name:"4",  D:3.600, p:0.660, std:"BA", Dp:3.191, Dm:2.782},
+  {name:"5",  D:3.200, p:0.590, std:"BA", Dp:2.834, Dm:2.468},
+  {name:"6",  D:2.800, p:0.530, std:"BA", Dp:2.471, Dm:2.142},
+  {name:"7",  D:2.500, p:0.480, std:"BA", Dp:2.202, Dm:1.904},
+  {name:"8",  D:2.200, p:0.430, std:"BA", Dp:1.933, Dm:1.666},
+  {name:"9",  D:1.900, p:0.390, std:"BA", Dp:1.658, Dm:1.416},
+  {name:"10", D:1.700, p:0.350, std:"BA", Dp:1.483, Dm:1.266},
+  {name:"11", D:1.500, p:0.310, std:"BA", Dp:1.308, Dm:1.116},
+  {name:"12", D:1.300, p:0.280, std:"BA", Dp:1.126, Dm:0.952},
+  {name:"13", D:1.200, p:0.250, std:"BA", Dp:1.045, Dm:0.890},
+  {name:"14", D:1.000, p:0.230, std:"BA", Dp:0.857, Dm:0.714},
+  {name:"15", D:0.900, p:0.200, std:"BA", Dp:0.776, Dm:0.652},
+  {name:"16", D:0.790, p:0.180, std:"BA", Dp:0.678, Dm:0.566},
+
+  // NPT
+  {name:"1/16-27",    D:7.895,   p:0.941, std:"NPT", Dp:7.284,   Dm:6.673},
+  {name:"1/8-27",     D:10.272,  p:0.941, std:"NPT", Dp:9.661,   Dm:9.050},
+  {name:"1/4-18",     D:13.572,  p:1.411, std:"NPT", Dp:12.443,  Dm:11.314},
+  {name:"3/8-18",     D:17.055,  p:1.411, std:"NPT", Dp:15.926,  Dm:14.797},
+  {name:"1/2-14",     D:21.223,  p:1.814, std:"NPT", Dp:19.772,  Dm:18.321},
+  {name:"3/4-14",     D:26.568,  p:1.814, std:"NPT", Dp:25.117,  Dm:23.666},
+  {name:"1-11.5",     D:33.228,  p:2.209, std:"NPT", Dp:31.461,  Dm:29.694},
+  {name:"1-1/4-11.5", D:42.164,  p:2.209, std:"NPT", Dp:40.397,  Dm:38.630},
+  {name:"1-1/2-11.5", D:48.054,  p:2.209, std:"NPT", Dp:46.287,  Dm:44.520},
+  {name:"2-11.5",     D:60.092,  p:2.209, std:"NPT", Dp:58.325,  Dm:56.558},
+  {name:"2-1/2-8",    D:73.025,  p:3.175, std:"NPT", Dp:70.159,  Dm:67.294},
+  {name:"3-8",        D:88.608,  p:3.175, std:"NPT", Dp:85.743,  Dm:82.877},
+  {name:"4-8",        D:113.030, p:3.175, std:"NPT", Dp:110.165, Dm:107.299},
+
+  // ANC
+  {name:"#5-40",   D:3.175,  p:0.635, std:"ANC", Dp:2.764, Dm:2.433},
+  {name:"#6-32",   D:3.505,  p:0.794, std:"ANC", Dp:2.990, Dm:2.580},
+  {name:"#8-32",   D:4.166,  p:0.794, std:"ANC", Dp:3.650, Dm:3.240},
+  {name:"#10-24",  D:4.826,  p:1.058, std:"ANC", Dp:4.089, Dm:3.505},
+  {name:"#12-24",  D:5.486,  p:1.058, std:"ANC", Dp:4.749, Dm:4.166},
+  {name:"1/4-20",  D:6.350,  p:1.270, std:"ANC", Dp:5.537, Dm:4.851},
+  {name:"5/16-18", D:7.938,  p:1.411, std:"ANC", Dp:7.034, Dm:6.223},
+  {name:"3/8-16",  D:9.525,  p:1.588, std:"ANC", Dp:8.509, Dm:7.513},
+  {name:"7/16-14", D:11.113, p:1.814, std:"ANC", Dp:9.951, Dm:8.737},
+  {name:"1/2-13",  D:12.700, p:1.954, std:"ANC", Dp:11.430,Dm:10.084},
+  {name:"9/16-12", D:14.288, p:2.117, std:"ANC", Dp:12.854,Dm:11.356},
+  {name:"5/8-11",  D:15.875, p:2.309, std:"ANC", Dp:14.376,Dm:12.628},
+  {name:"3/4-10",  D:19.050, p:2.540, std:"ANC", Dp:17.424,Dm:15.278},
+  {name:"7/8-9",   D:22.225, p:2.822, std:"ANC", Dp:20.391,Dm:17.866},
+  {name:"1-8",     D:25.400, p:3.175, std:"ANC", Dp:23.338,Dm:20.450},
+
+  // ANF
+  {name:"#5-44",   D:3.175,  p:0.577, std:"ANF", Dp:2.799, Dm:2.487},
+  {name:"#6-40",   D:3.505,  p:0.635, std:"ANF", Dp:3.094, Dm:2.764},
+  {name:"#8-36",   D:4.166,  p:0.706, std:"ANF", Dp:3.708, Dm:3.353},
+  {name:"#10-32",  D:4.826,  p:0.794, std:"ANF", Dp:4.310, Dm:3.912},
+  {name:"#12-28",  D:5.486,  p:0.907, std:"ANF", Dp:4.893, Dm:4.420},
+  {name:"1/4-28",  D:6.350,  p:0.907, std:"ANF", Dp:5.757, Dm:5.284},
+  {name:"5/16-24", D:7.938,  p:1.058, std:"ANF", Dp:7.260, Dm:6.743},
+  {name:"3/8-24",  D:9.525,  p:1.058, std:"ANF", Dp:8.848, Dm:8.331},
+  {name:"7/16-20", D:11.113, p:1.270, std:"ANF", Dp:10.287,Dm:9.614},
+  {name:"1/2-20",  D:12.700, p:1.270, std:"ANF", Dp:11.874,Dm:11.201},
+  {name:"9/16-18", D:14.288, p:1.411, std:"ANF", Dp:13.384,Dm:12.573},
+  {name:"5/8-18",  D:15.875, p:1.411, std:"ANF", Dp:14.971,Dm:14.160},
+  {name:"3/4-16",  D:19.050, p:1.588, std:"ANF", Dp:18.034,Dm:17.038},
+  {name:"7/8-14",  D:22.225, p:1.814, std:"ANF", Dp:21.063,Dm:19.849},
+  {name:"1-14",    D:25.400, p:1.814, std:"ANF", Dp:24.238,Dm:23.024},
+
+  // ACME
+  {name:"1/4-16",   D:6.350,  p:1.588, std:"ACME", Dp:5.556,  Dm:4.762},
+  {name:"5/16-14",  D:7.938,  p:1.814, std:"ACME", Dp:7.031,  Dm:6.124},
+  {name:"3/8-12",   D:9.525,  p:2.117, std:"ACME", Dp:8.467,  Dm:7.408},
+  {name:"7/16-12",  D:11.113, p:2.117, std:"ACME", Dp:10.054, Dm:8.996},
+  {name:"1/2-10",   D:12.700, p:2.540, std:"ACME", Dp:11.430, Dm:10.160},
+  {name:"5/8-8",    D:15.875, p:3.175, std:"ACME", Dp:14.288, Dm:12.700},
+  {name:"3/4-6",    D:19.050, p:4.233, std:"ACME", Dp:16.934, Dm:14.817},
+  {name:"7/8-6",    D:22.225, p:4.233, std:"ACME", Dp:20.109, Dm:17.992},
+  {name:"1-5",      D:25.400, p:5.080, std:"ACME", Dp:22.860, Dm:20.320},
+  {name:"1-1/4-5",  D:31.750, p:5.080, std:"ACME", Dp:29.210, Dm:26.670},
+  {name:"1-1/2-4",  D:38.100, p:6.350, std:"ACME", Dp:34.925, Dm:31.750},
+  {name:"1-3/4-4",  D:44.450, p:6.350, std:"ACME", Dp:41.275, Dm:38.100},
+  {name:"2-4",      D:50.800, p:6.350, std:"ACME", Dp:47.625, Dm:44.450},
+  {name:"2-1/2-3",  D:63.500, p:8.467, std:"ACME", Dp:59.267, Dm:55.033},
+  {name:"3-2",      D:76.200, p:12.700,std:"ACME", Dp:69.850, Dm:63.500},
+
+  // Buttress
+  {name:"1/2-12",  D:12.700,  p:2.117, std:"Buttress", Dp:11.642, Dm:10.363},
+  {name:"5/8-10",  D:15.875,  p:2.540, std:"Buttress", Dp:14.605, Dm:13.081},
+  {name:"3/4-8",   D:19.050,  p:3.175, std:"Buttress", Dp:17.463, Dm:15.494},
+  {name:"7/8-8",   D:22.225,  p:3.175, std:"Buttress", Dp:20.638, Dm:18.669},
+  {name:"1-6",     D:25.400,  p:4.233, std:"Buttress", Dp:23.284, Dm:20.726},
+  {name:"1-1/4-6", D:31.750,  p:4.233, std:"Buttress", Dp:29.634, Dm:27.076},
+  {name:"1-1/2-5", D:38.100,  p:5.080, std:"Buttress", Dp:35.560, Dm:32.512},
+  {name:"1-3/4-5", D:44.450,  p:5.080, std:"Buttress", Dp:41.910, Dm:38.862},
+  {name:"2-4",     D:50.800,  p:6.350, std:"Buttress", Dp:47.625, Dm:43.815},
+  {name:"2-1/2-4", D:63.500,  p:6.350, std:"Buttress", Dp:60.325, Dm:56.515},
+  {name:"3-3",     D:76.200,  p:8.467, std:"Buttress", Dp:71.967, Dm:67.056},
+  {name:"4-3",     D:101.600, p:8.467, std:"Buttress", Dp:97.367, Dm:92.456},
+
+  // Square
+  {name:"10x2",  D:10.000, p:2.000, std:"Square", Dp:9.000,  Dm:8.000},
+  {name:"12x3",  D:12.000, p:3.000, std:"Square", Dp:10.500, Dm:9.000},
+  {name:"16x4",  D:16.000, p:4.000, std:"Square", Dp:14.000, Dm:12.000},
+  {name:"20x4",  D:20.000, p:4.000, std:"Square", Dp:18.000, Dm:16.000},
+  {name:"24x5",  D:24.000, p:5.000, std:"Square", Dp:21.500, Dm:19.000},
+  {name:"28x5",  D:28.000, p:5.000, std:"Square", Dp:25.500, Dm:23.000},
+  {name:"30x6",  D:30.000, p:6.000, std:"Square", Dp:27.000, Dm:24.000},
+  {name:"36x6",  D:36.000, p:6.000, std:"Square", Dp:33.000, Dm:30.000},
+  {name:"40x7",  D:40.000, p:7.000, std:"Square", Dp:36.500, Dm:33.000},
+  {name:"44x7",  D:44.000, p:7.000, std:"Square", Dp:40.500, Dm:37.000},
+  {name:"48x8",  D:48.000, p:8.000, std:"Square", Dp:44.000, Dm:40.000},
+  {name:"60x9",  D:60.000, p:9.000, std:"Square", Dp:55.500, Dm:51.000},
+
+  // Knuckle
+  {name:"Rd 10x2",  D:10.000, p:2.000, std:"Knuckle", Dp:8.918,  Dm:7.835},
+  {name:"Rd 14x3",  D:14.000, p:3.000, std:"Knuckle", Dp:12.376, Dm:10.752},
+  {name:"Rd 16x3",  D:16.000, p:3.000, std:"Knuckle", Dp:14.376, Dm:12.752},
+  {name:"Rd 20x4",  D:20.000, p:4.000, std:"Knuckle", Dp:17.835, Dm:15.670},
+  {name:"Rd 24x4",  D:24.000, p:4.000, std:"Knuckle", Dp:21.835, Dm:19.670},
+  {name:"Rd 28x5",  D:28.000, p:5.000, std:"Knuckle", Dp:25.294, Dm:22.587},
+  {name:"Rd 32x5",  D:32.000, p:5.000, std:"Knuckle", Dp:29.294, Dm:26.587},
+  {name:"Rd 36x6",  D:36.000, p:6.000, std:"Knuckle", Dp:32.753, Dm:29.505},
+  {name:"Rd 40x6",  D:40.000, p:6.000, std:"Knuckle", Dp:36.753, Dm:33.505},
+  {name:"Rd 48x8",  D:48.000, p:8.000, std:"Knuckle", Dp:43.670, Dm:39.340},
+  {name:"Rd 60x8",  D:60.000, p:8.000, std:"Knuckle", Dp:55.670, Dm:51.340},
+];
+
+/* =======================================================================
+   SECTION 3 — STANDARD METADATA
+======================================================================= */
+const STANDARDS = {
+  "M":       { full:"Metric Coarse (M)",         flag:"🌍", metric:true,  desc:"ISO 724 · M1.6–M64",                            angle:60,  profile:"iso60" },
+  "MF":      { full:"Metric Fine (MF)",           flag:"🌍", metric:true,  desc:"ISO 724 · M1–M48 fine pitch",                   angle:60,  profile:"iso60" },
+  "UNC":     { full:"Unified National Coarse",    flag:"🇺🇸", metric:false, desc:"ASME B1.1 · #1–1½\" UNC",                      angle:60,  profile:"iso60" },
+  "UNF":     { full:"Unified National Fine",      flag:"🇺🇸", metric:false, desc:"ASME B1.1 · #0–1½\" UNF",                      angle:60,  profile:"iso60" },
+  "UNEF":    { full:"Unified Extra Fine",         flag:"🇺🇸", metric:false, desc:"ASME B1.1 · UNEF series",                      angle:60,  profile:"iso60" },
+  "BSP":     { full:"BSP (Pipe)",                 flag:"🇬🇧", metric:false, desc:"ISO 228 / BS 2779 · 1/16\"–2\" pipe thread",    angle:55,  profile:"whitworth55" },
+  "BSW":     { full:"BSW (Whitworth)",            flag:"🇬🇧", metric:false, desc:"BS 84 · 1/8\"–2\" Whitworth fastener",          angle:55,  profile:"whitworth55" },
+  "BSF":     { full:"BSF (Whitworth Fine)",       flag:"🇬🇧", metric:false, desc:"BS 84 · 3/16\"–2\" Whitworth fine",             angle:55,  profile:"whitworth55" },
+  "BA":      { full:"British Association (BA)",   flag:"🇬🇧", metric:true,  desc:"BS 93 · BA 0–16 precision fastener",            angle:47.5,profile:"ba475" },
+  "NPT":     { full:"NPT (Tapered Pipe)",         flag:"🇺🇸", metric:false, desc:"ASME B1.20.1 · 1/16\"–4\" tapered pipe",       angle:60,  profile:"npt60" },
+  "ANC":     { full:"American National Coarse",   flag:"🇺🇸", metric:false, desc:"ASA B1.1 · #5–1\" American National Coarse",   angle:60,  profile:"flat60" },
+  "ANF":     { full:"American National Fine",     flag:"🇺🇸", metric:false, desc:"ASA B1.1 · #5–1\" American National Fine",     angle:60,  profile:"flat60" },
+  "ACME":    { full:"ACME",                       flag:"🇺🇸", metric:false, desc:"ASME B1.5 · 1/4\"–3\" trapezoidal power screw",angle:29,  profile:"acme29" },
+  "Buttress":{ full:"Buttress",                   flag:"🇺🇸", metric:false, desc:"ANSI B1.9 · 1/2\"–4\" high axial load",        angle:7,   profile:"buttress" },
+  "Square":  { full:"Square Thread",              flag:"🌍", metric:true,  desc:"General · 10–60 mm parallel-flank power screw",angle:0,   profile:"square0" },
+  "Knuckle": { full:"Knuckle (Rd)",               flag:"🇩🇪", metric:true,  desc:"DIN 405 · Rd 10–60 rounded profile",           angle:30,  profile:"knuckle30" },
+};
+
+/* =======================================================================
+   SECTION 4 — APP STATE
+======================================================================= */
+const state = {
+  threadType: 'external',
+  inputUnit:  'mm',
+  majorText:  '',
+  minorText:  '',
+  pitchText:  '',
+  tpiText:    '',
+  tolerance:  5,
+  selected:   new Set(Object.keys(STANDARDS)),
+  results:    [],
+  searched:   false,
+  error:      null,
+  detailResult: null,
+  prevUnit:   'mm',
+};
+
+/* =======================================================================
+   SECTION 5 — MATCHING ENGINE
+======================================================================= */
+function tappingDrill(t) { return t.D - t.p; }
+
+function matchQuality(score) {
+  if (score < 1.0) return 'Excellent';
+  if (score < 2.5) return 'Good';
+  if (score < 5.0) return 'Acceptable';
+  return 'Marginal';
+}
+
+function matchPercent(score) {
+  return Math.round(Math.max(0, Math.min(100, 100 - score * 10)));
+}
+
+function matchColor(quality) {
+  return { Excellent:'green', Good:'blue', Acceptable:'orange', Marginal:'red' }[quality] || 'red';
+}
+
+function findMatches(D, p, tol, sel) {
+  const results = [];
+  for (const t of DB) {
+    if (!sel.has(t.std)) continue;
+    const dDev = Math.abs(t.D - D) / D * 100;
+    const pDev = Math.abs(t.p - p) / p * 100;
+    if (dDev > tol * 3 && pDev > tol * 3) continue;
+    const score = dDev * 0.55 + pDev * 0.45;
+    const within = dDev <= tol && pDev <= tol;
+    results.push({ thread:t, dDev, pDev, score, within,
+      quality: matchQuality(score), pct: matchPercent(score) });
+  }
+  return results.filter(r => r.pct > 0)
+    .sort((a,b) => (b.within - a.within) || (a.score - b.score));
+}
+
+function findInternalMatches(minD, p, tol, sel) {
+  const results = [];
+  for (const t of DB) {
+    if (!sel.has(t.std)) continue;
+    const tap = tappingDrill(t);
+    const dDev = Math.abs(tap - minD) / Math.max(minD, 0.001) * 100;
+    const pDev = p != null ? Math.abs(t.p - p) / Math.max(p, 0.001) * 100 : 0;
+    const score = p != null ? dDev * 0.55 + pDev * 0.45 : dDev;
+    const within = p != null ? (dDev <= tol && pDev <= tol) : dDev <= tol;
+    if (dDev > tol * 3) continue;
+    results.push({ thread:t, dDev, pDev, score, within,
+      quality: matchQuality(score), pct: matchPercent(score) });
+  }
+  return results.filter(r => r.pct > 0)
+    .sort((a,b) => (b.within - a.within) || (a.score - b.score));
+}
+
+/* =======================================================================
+   SECTION 6 — UNIT HELPERS
+======================================================================= */
+function majorDiameterMM() {
+  const v = parseFloat(state.majorText);
+  if (!v || v <= 0) return null;
+  return state.inputUnit === 'inch' ? v * 25.4 : v;
+}
+
+function minorDiameterMM() {
+  const v = parseFloat(state.minorText);
+  if (!v || v <= 0) return null;
+  return state.inputUnit === 'inch' ? v * 25.4 : v;
+}
+
+function pitchMM() {
+  if (state.pitchText) {
+    const v = parseFloat(state.pitchText);
+    if (v > 0) {
+      if (state.inputUnit === 'mm' || state.inputUnit === 'tpi') return state.inputUnit === 'tpi' ? 25.4/v : v;
+      return v * 25.4;
+    }
+  }
+  const tpi = parseFloat(state.tpiText);
+  if (tpi > 0) return 25.4 / tpi;
+  return null;
+}
+
+function toleranceColor(t) {
+  if (t < 5)  return 'var(--green)';
+  if (t < 8)  return 'var(--blue)';
+  if (t < 12) return 'var(--orange)';
+  return 'var(--red)';
+}
+
+function canSearch() {
+  if (!state.selected.size) return false;
+  if (state.threadType === 'internal') return minorDiameterMM() != null;
+  return majorDiameterMM() != null && pitchMM() != null;
+}
+
+function trimNum(v, dec) {
+  let s = v.toFixed(dec);
+  if (s.includes('.')) { s = s.replace(/0+$/, '').replace(/\.$/, ''); }
+  return s;
+}
+
+function convertInputs(oldUnit, newUnit) {
+  if (oldUnit === newUnit) return;
+
+  const major = parseFloat(state.majorText);
+  if (major > 0) {
+    let mm = oldUnit === 'inch' ? major * 25.4 : major;
+    state.majorText = newUnit === 'inch' ? trimNum(mm/25.4,4) : trimNum(mm,3);
+  }
+
+  const pitch = parseFloat(state.pitchText);
+  if (pitch > 0) {
+    let pmm;
+    if (oldUnit === 'mm')   pmm = pitch;
+    else if (oldUnit === 'inch') pmm = pitch * 25.4;
+    else pmm = 25.4 / pitch; // tpi
+    if (newUnit === 'mm')   state.pitchText = trimNum(pmm, 3);
+    else if (newUnit === 'inch') state.pitchText = trimNum(pmm/25.4, 4);
+    else state.pitchText = trimNum(25.4/pmm, 2); // tpi
+  }
+}
+
+/* =======================================================================
+   SECTION 7 — SEARCH ACTION
+======================================================================= */
+function doSearch() {
+  state.error = null;
+
+  if (state.threadType === 'internal') {
+    const minD = minorDiameterMM();
+    if (!minD) { state.error = 'Please enter a valid minor diameter.'; renderError(); return; }
+    if (minD < 0.5 || minD > 200) { state.error = 'Minor diameter must be between 0.5 mm and 200 mm.'; renderError(); return; }
+    state.results = findInternalMatches(minD, pitchMM(), state.tolerance, state.selected);
+  } else {
+    const D = majorDiameterMM(), p = pitchMM();
+    if (!D || !p) { state.error = 'Please enter valid positive numbers for both fields.'; renderError(); return; }
+    if (D < 0.5 || D > 200) { state.error = 'Major diameter must be between 0.5 mm and 200 mm.'; renderError(); return; }
+    if (p < 0.1 || p > 20)  { state.error = 'Pitch must be between 0.1 mm and 20 mm.'; renderError(); return; }
+    state.results = findMatches(D, p, state.tolerance, state.selected);
+  }
+
+  state.searched = true;
+  renderResults();
+  renderError();
+  document.getElementById('btn-reset').disabled = false;
+}
+
+function doReset() {
+  state.majorText = ''; state.minorText = '';
+  state.pitchText = ''; state.tpiText = '';
+  state.results = []; state.searched = false; state.error = null;
+  state.tolerance = 5;
+  document.getElementById('inp-major').value = '';
+  document.getElementById('inp-minor').value = '';
+  document.getElementById('inp-pitch').value = '';
+  document.getElementById('inp-tpi').value   = '';
+  document.getElementById('tol-slider').value = 5;
+  updateToleranceDisplay();
+  renderError();
+  renderResults();
+  updateSearchBtn();
+  document.getElementById('btn-reset').disabled = true;
+}
+
+/* =======================================================================
+   SECTION 8 — RENDER HELPERS
+======================================================================= */
+function renderError() {
+  const el = document.getElementById('error-banner');
+  const txt = document.getElementById('error-text');
+  if (state.error) {
+    el.classList.remove('hidden');
+    txt.textContent = state.error;
+  } else {
+    el.classList.add('hidden');
+  }
+}
+
+function qualityClass(quality, isBest) {
+  if (!isBest) return '';
+  const map = { Excellent:'best', Good:'best-blue', Acceptable:'best-orange', Marginal:'best-red' };
+  return map[quality] || 'best';
+}
+
+function threadDisplayName(t) {
+  if (t.std === 'M')  return 'M' + t.name;
+  if (t.std === 'MF') return 'MF ' + t.name;
+  if (t.std === 'BA') return 'BA' + t.name;
+  return t.name;
+}
+
+function stdAbbrev(std) {
+  const map = { M:'M', MF:'MF', UNC:'UNC', UNF:'UNF', UNEF:'UNEF',
+    BSP:'BSP', BSW:'BSW', BSF:'BSF', BA:'BA', NPT:'NPT',
+    ANC:'ANC', ANF:'ANF', ACME:'ACME', Buttress:'BUTT', Square:'SQ', Knuckle:'Rd' };
+  return map[std] || std;
+}
+
+function colorVar(c) {
+  return `var(--${c})`;
+}
+
+function renderResultRow(r, isBest) {
+  const c = matchColor(r.quality);
+  const cls = qualityClass(r.quality, isBest);
+  const displayName = threadDisplayName(r.thread);
+  const check = isBest && r.within ? ' <span style="color:var(--green)">✓</span>' : '';
+
+  return `<div class="result-row ${cls}" onclick="openDetail(${DB.indexOf(r.thread)})">
+    <div class="std-badge">
+      <span class="std-abbrev" style="color:${colorVar(c)}">${stdAbbrev(r.thread.std)}</span>
+      <div class="std-dot" style="background:${colorVar(c)}"></div>
+    </div>
+    <div class="result-info">
+      <div class="result-name">${displayName}${check}</div>
+      <div class="result-dims">Ø ${r.thread.D.toFixed(3)} mm &nbsp;·&nbsp; p ${r.thread.p.toFixed(3)} mm &nbsp;·&nbsp; ${STANDARDS[r.thread.std]?.full || r.thread.std}</div>
+    </div>
+    <div class="result-pct">
+      <div class="pct-num" style="color:${colorVar(c)}">${r.pct}%</div>
+      <div class="pct-label">match</div>
+    </div>
+    <span class="chevron">›</span>
+  </div>`;
+}
+
+function renderResults() {
+  const sec = document.getElementById('results-section');
+  const list = document.getElementById('results-list');
+  const badge = document.getElementById('within-badge');
+
+  if (!state.searched) { sec.classList.add('hidden'); return; }
+  sec.classList.remove('hidden');
+
+  const within = state.results.filter(r => r.within).length;
+  if (within > 0) {
+    badge.classList.remove('hidden');
+    badge.textContent = `${within} within ±${state.tolerance}%`;
+  } else {
+    badge.classList.add('hidden');
+  }
+
+  if (!state.results.length) {
+    list.innerHTML = `<div class="no-results">
+      <div class="icon">❓</div>
+      <h3>No Matches Found</h3>
+      <p>No thread standards match within ${state.tolerance * 3}% of the entered measurements.<br>Try increasing the tolerance or check your inputs.</p>
+    </div>`;
+    return;
+  }
+
+  let html = '';
+  const best = state.results[0];
+  html += `<div class="results-section-label">Best Match</div>`;
+  html += renderResultRow(best, true);
+
+  const others = state.results.slice(1, 11);
+  if (others.length) {
+    html += `<div class="results-section-label" style="margin-top:10px;">Other Candidates</div>`;
+    for (const r of others) html += renderResultRow(r, false);
+  }
+
+  list.innerHTML = html;
+}
+
+function updateSearchBtn() {
+  document.getElementById('btn-search').disabled = !canSearch();
+}
+
+function updateToleranceDisplay() {
+  const t = state.tolerance;
+  const c = toleranceColor(t);
+  const disp = document.getElementById('tol-display');
+  const slider = document.getElementById('tol-slider');
+  disp.textContent = `±${t}%`;
+  disp.style.color = c;
+  slider.style.color = c;
+  slider.style.accentColor = c;
+}
+
+function updateUnitLabels() {
+  const u = state.inputUnit;
+  const dLabel = u === 'inch' ? 'Major Diameter (inches)' : 'Major Diameter (mm)';
+  const pLabel = u === 'mm'   ? 'Pitch (mm)' : u === 'inch' ? 'Pitch (inches)' : 'Threads per Inch (TPI)';
+  const dUnit  = u === 'inch' ? '"' : 'mm';
+  const pUnit  = u === 'tpi'  ? 'TPI' : u === 'inch' ? '"' : 'mm';
+  const dPH    = u === 'inch' ? 'e.g. 0.394' : 'e.g. 10.0';
+  const pPH    = u === 'mm'   ? 'e.g. 1.25'  : u === 'inch' ? 'e.g. 0.05' : 'e.g. 20';
+
+  document.getElementById('label-major').textContent = dLabel;
+  document.getElementById('unit-major').textContent  = dUnit;
+  document.getElementById('inp-major').placeholder   = dPH;
+  document.getElementById('label-pitch').textContent = pLabel;
+  document.getElementById('unit-pitch').textContent  = pUnit;
+  document.getElementById('inp-pitch').placeholder   = pPH;
+}
+
+function updateFieldVisibility() {
+  const isInternal = state.threadType === 'internal';
+  document.getElementById('field-major').classList.toggle('hidden', isInternal);
+  document.getElementById('field-minor').classList.toggle('hidden', !isInternal);
+
+  const showTPI = !isInternal;
+  document.getElementById('field-tpi').classList.toggle('hidden', !showTPI);
+}
+
+function updateInputBorders() {
+  const maj = majorDiameterMM();
+  const min = minorDiameterMM();
+  const p   = pitchMM();
+  const tpi = parseFloat(state.tpiText);
+
+  document.getElementById('wrap-major').classList.toggle('valid', maj != null);
+  document.getElementById('wrap-minor').classList.toggle('valid', min != null);
+  document.getElementById('wrap-pitch').classList.toggle('valid', p != null && state.pitchText !== '');
+  document.getElementById('wrap-tpi').classList.toggle('valid', tpi > 0);
+}
+
+/* =======================================================================
+   SECTION 9 — DETAIL MODAL
+======================================================================= */
+function openDetail(dbIdx) {
+  // find the result from state.results matching dbIdx
+  const t = DB[dbIdx];
+  const r = state.results.find(r => r.thread === t);
+  if (!r) return;
+
+  state.detailResult = r;
+  renderDetail(r);
+  document.getElementById('modal-detail').classList.add('open');
+}
+
+function gradientForQuality(q) {
+  const map = {
+    Excellent: 'linear-gradient(135deg,rgba(34,197,94,.85),#16a34a)',
+    Good:      'linear-gradient(135deg,rgba(59,130,246,.85),#1d4ed8)',
+    Acceptable:'linear-gradient(135deg,rgba(249,115,22,.85),#c2410c)',
+    Marginal:  'linear-gradient(135deg,rgba(239,68,68,.85),#991b1b)',
+  };
+  return map[q] || map.Marginal;
+}
+
+function deviationColor(dev) {
+  if (dev <= 2.5) return 'var(--green)';
+  if (dev <= 5)   return 'var(--orange)';
+  return 'var(--red)';
+}
+
+function renderMatchRow(label, measured, nominal, dev) {
+  const arrow = measured > nominal ? '↑' : '↓';
+  const aC = deviationColor(dev);
+  return `<div class="match-row">
+    <div class="match-row-label">${label}</div>
+    <div class="match-cols">
+      <div class="match-col">
+        <div class="match-col-label">Measured</div>
+        <div class="match-col-value">${measured.toFixed(4)} mm</div>
+      </div>
+      <div class="match-arrow" style="color:${aC}">${arrow}</div>
+      <div class="match-col">
+        <div class="match-col-label">Nominal</div>
+        <div class="match-col-value">${nominal.toFixed(4)} mm</div>
+      </div>
+      <div class="match-col">
+        <div class="match-col-label">Deviation</div>
+        <div class="match-col-value" style="color:${aC}">${dev.toFixed(2)}%</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderDetail(r) {
+  const t = r.thread;
+  const std = STANDARDS[t.std] || {};
+  const tap = tappingDrill(t);
+  const c = matchColor(r.quality);
+  const isInternal = state.threadType === 'internal';
+  const hasPitch = pitchMM() != null;
+  const pM = pitchMM();
+
+  const qualIcon = {Excellent:'⭐', Good:'✅', Acceptable:'⚠️', Marginal:'❓'}[r.quality] || '❓';
+  const tolIcon = r.within ? '✓ Within Tolerance' : '✗ Outside Tolerance';
+
+  let html = `
+  <div class="detail-header" style="background:${gradientForQuality(r.quality)}">
+    <h2>${threadDisplayName(t)}</h2>
+    <div class="std-name">${std.full || t.std}</div>
+    <div class="detail-badges">
+      <span class="detail-badge">${qualIcon} ${r.quality} Match</span>
+      <span class="detail-badge">${tolIcon}</span>
+    </div>
+  </div>
+
+  <div class="detail-section">
+    <div class="detail-section-title">Match Analysis</div>
+    <div class="detail-card">`;
+
+  if (isInternal) {
+    const measured = minorDiameterMM() || 0;
+    html += renderMatchRow('Tapping Drill', measured, tap, r.dDev);
+  } else {
+    const measured = majorDiameterMM() || 0;
+    html += renderMatchRow('Major Diameter', measured, t.D, r.dDev);
+  }
+
+  if (hasPitch) {
+    html += `<div style="border-top:1px solid var(--border);margin:10px 0 10px;"></div>`;
+    html += renderMatchRow('Pitch', pM, t.p, r.pDev);
+  }
+
+  html += `<div class="overall-row">
+    <div>
+      <div class="overall-label">Overall Match</div>
+      <div class="overall-sub">Weighted: diameter 55%, pitch 45%</div>
+    </div>
+    <div style="text-align:right">
+      <div class="overall-pct" style="color:var(--${c})">${r.pct}%</div>
+      <div class="overall-match-label">match</div>
+    </div>
+  </div>`;
+
+  html += `</div></div>`;
+
+  // Thread specifications
+  const showTPI = !['M','MF','Square','Knuckle'].includes(t.std);
+  html += `
+  <div class="detail-section">
+    <div class="detail-section-title">Thread Specifications</div>
+    <div class="detail-card">
+      <div class="spec-row"><span class="spec-label">Major Diameter</span><span class="spec-value">${t.D.toFixed(4)} mm</span></div>
+      <div class="spec-row"><span class="spec-label">Pitch Diameter</span><span class="spec-value">${t.Dp.toFixed(4)} mm</span></div>
+      <div class="spec-row"><span class="spec-label">Minor Diameter</span><span class="spec-value">${t.Dm.toFixed(4)} mm</span></div>
+      <div class="spec-row"><span class="spec-label">Tapping Drill</span><span class="spec-value">${tap.toFixed(4)} mm</span></div>
+      <div class="spec-row"><span class="spec-label">Pitch</span><span class="spec-value">${t.p.toFixed(4)} mm</span></div>
+      ${showTPI ? `<div class="spec-row"><span class="spec-label">TPI</span><span class="spec-value">${(25.4/t.p).toFixed(2)}</span></div>` : ''}
+      <div class="spec-row"><span class="spec-label">Standard</span><span class="spec-value">${std.full || t.std}</span></div>
+      <div class="spec-row"><span class="spec-label">Spec Reference</span><span class="spec-value">${std.desc || '—'}</span></div>
+    </div>
+  </div>`;
+
+  // Imperial equivalents
+  html += `
+  <div class="detail-section">
+    <div class="detail-section-title">Imperial Equivalents</div>
+    <div class="detail-card">
+      <div class="spec-row"><span class="spec-label">Major Diameter</span><span class="spec-value">${(t.D/25.4).toFixed(5)}"</span></div>
+      <div class="spec-row"><span class="spec-label">Pitch</span><span class="spec-value">${(t.p/25.4).toFixed(5)}"</span></div>
+      <div class="spec-row"><span class="spec-label">Minor Diameter</span><span class="spec-value">${(t.Dm/25.4).toFixed(5)}"</span></div>
+      <div class="spec-row"><span class="spec-label">Tapping Drill</span><span class="spec-value">${(tap/25.4).toFixed(5)}"</span></div>
+    </div>
+  </div>`;
+
+  // Thread profile diagram
+  html += `
+  <div class="detail-section">
+    <div class="detail-section-title">Thread Profile</div>
+    <div class="profile-svg-wrap">
+      ${buildProfileSVG(std.profile || 'iso60', std.angle || 60)}
+    </div>
+    <div class="profile-info-grid">
+      <div class="profile-info-item">
+        <div class="profile-info-label">Thread Angle</div>
+        <div class="profile-info-value">${std.angle || 60}°</div>
+      </div>
+      <div class="profile-info-item">
+        <div class="profile-info-label">Profile Type</div>
+        <div class="profile-info-value">${profileTypeName(std.profile)}</div>
+      </div>
+    </div>
+  </div>`;
+
+  document.getElementById('detail-body').innerHTML = html;
+}
+
+function profileTypeName(p) {
+  const map = {
+    iso60:'V-Thread (rounded root)',
+    whitworth55:'Whitworth (rounded)',
+    ba475:'BA (47.5°)',
+    npt60:'V-Thread (tapered)',
+    flat60:'Flat Form (60°)',
+    acme29:'Trapezoidal (ACME)',
+    buttress:'Buttress (7°/45°)',
+    square0:'Square Thread',
+    knuckle30:'Knuckle (rounded)',
+  };
+  return map[p] || p;
+}
+
+/* =======================================================================
+   SECTION 10 — THREAD PROFILE SVG GENERATOR
+======================================================================= */
+function buildProfileSVG(profile, angle) {
+  const W = 320, H = 120;
+  const stroke = '#555';
+  const fill = '#e8f0fe';
+  const fillDark = '#c7d7fc';
+
+  function vThread(halfAngle, roundRoot, roundCrest, taper) {
+    // Draw 2.5 thread pitches cross-section
+    const pts = [];
+    const n = 3; // number of pitches to draw
+    const pw = W / n;
+    const depth = H * 0.72;
+    const crY = 8;
+    const rootY = crY + depth;
+    const tan = Math.tan(halfAngle * Math.PI / 180);
+    const rootFlat = roundRoot  ? pw * 0.06 : 0;
+    const crestFlat = roundCrest ? pw * 0.08 : 0.15 * pw;
+
+    let path = `M 0,${crY}`;
+    for (let i = 0; i < n; i++) {
+      const x0 = i * pw;
+      // crest flat
+      const cfl = crestFlat / 2;
+      const xm = x0 + pw / 2;
+      // left flank down
+      const xrootL = xm - rootFlat / 2;
+      const xrootR = xm + rootFlat / 2;
+      const xflankL = xrootL - (depth - (roundRoot?4:0)) / tan;
+      const xflankR = xrootR + (depth - (roundRoot?4:0)) / tan;
+      // apply taper offset
+      const tOffset = taper ? i * 3 : 0;
+
+      path += ` L ${xflankL - cfl + tOffset},${crY}`;
+      path += ` L ${xrootL + tOffset},${rootY - (roundRoot?5:0)}`;
+      if (roundRoot) path += ` Q ${xm + tOffset},${rootY + 4} ${xrootR + tOffset},${rootY - 5}`;
+      else           path += ` L ${xrootR + tOffset},${rootY}`;
+      path += ` L ${xflankR + cfl + tOffset},${crY}`;
+      if (i < n-1) path += ` L ${(i+1)*pw},${crY}`;
+    }
+    path += ` L ${W},${crY}`;
+
+    return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+      <rect width="${W}" height="${H}" fill="none"/>
+      <line x1="0" y1="${crY}" x2="${W}" y2="${crY}" stroke="${stroke}" stroke-width="2.5"/>
+      <path d="${path} Z" fill="${fill}" stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round"/>
+      <line x1="0" y1="${rootY}" x2="${W}" y2="${rootY}" stroke="${stroke}" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>
+    </svg>`;
+  }
+
+  function acmeSVG() {
+    const pw = W / 3, depth = H * 0.60, crY = 15, rootY = crY + depth;
+    const halfA = 14.5 * Math.PI / 180;
+    const crestFlat = pw * 0.38, rootFlat = pw * 0.28;
+    let path = `M 0,${crY}`;
+    for (let i = 0; i < 3; i++) {
+      const x0 = i * pw, xm = x0 + pw / 2;
+      const xCL = xm - crestFlat/2, xCR = xm + crestFlat/2;
+      const xRL = xm - rootFlat/2, xRR = xm + rootFlat/2;
+      path += ` L ${xCL},${crY} L ${xRL},${rootY} L ${xRR},${rootY} L ${xCR},${crY}`;
+      if (i < 2) path += ` L ${(i+1)*pw},${crY}`;
+    }
+    path += ` L ${W},${crY}`;
+    return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+      <rect width="${W}" height="${H}" fill="none"/>
+      <line x1="0" y1="${crY}" x2="${W}" y2="${crY}" stroke="${stroke}" stroke-width="2.5"/>
+      <path d="${path} Z" fill="${fill}" stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round"/>
+      <line x1="0" y1="${rootY}" x2="${W}" y2="${rootY}" stroke="${stroke}" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>
+    </svg>`;
+  }
+
+  function buttressSVG() {
+    const pw = W / 3, depth = H * 0.60, crY = 15, rootY = crY + depth;
+    const pressAngle = 7 * Math.PI / 180, clearAngle = 45 * Math.PI / 180;
+    let path = `M 0,${crY}`;
+    for (let i = 0; i < 3; i++) {
+      const x0 = i * pw, xm = x0 + pw/2;
+      const rootW = pw * 0.15;
+      const xRL = xm - rootW/2, xRR = xm + rootW/2;
+      const xCL = xRL - depth * Math.tan(clearAngle);
+      const xCR = xRR + depth * Math.tan(pressAngle);
+      path += ` L ${xCL},${crY} L ${xRL},${rootY} L ${xRR},${rootY} L ${xCR},${crY}`;
+      if (i < 2) path += ` L ${(i+1)*pw},${crY}`;
+    }
+    path += ` L ${W},${crY}`;
+    return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+      <rect width="${W}" height="${H}" fill="none"/>
+      <line x1="0" y1="${crY}" x2="${W}" y2="${crY}" stroke="${stroke}" stroke-width="2.5"/>
+      <path d="${path} Z" fill="${fill}" stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round"/>
+      <line x1="0" y1="${rootY}" x2="${W}" y2="${rootY}" stroke="${stroke}" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>
+    </svg>`;
+  }
+
+  function squareSVG() {
+    const pw = W / 3, depth = H * 0.55, crY = 15, rootY = crY + depth;
+    const threadW = pw * 0.48, gapW = pw - threadW;
+    let path = `M 0,${crY}`;
+    for (let i = 0; i < 3; i++) {
+      const x0 = i * pw + gapW/2;
+      path += ` L ${x0},${crY} L ${x0},${rootY} L ${x0+threadW},${rootY} L ${x0+threadW},${crY}`;
+      if (i < 2) path += ` L ${(i+1)*pw},${crY}`;
+    }
+    path += ` L ${W},${crY}`;
+    return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+      <rect width="${W}" height="${H}" fill="none"/>
+      <line x1="0" y1="${crY}" x2="${W}" y2="${crY}" stroke="${stroke}" stroke-width="2.5"/>
+      <path d="${path} Z" fill="${fill}" stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round"/>
+      <line x1="0" y1="${rootY}" x2="${W}" y2="${rootY}" stroke="${stroke}" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>
+    </svg>`;
+  }
+
+  function knuckleSVG() {
+    const pw = W / 3, depth = H * 0.55, crY = 15, rootY = crY + depth;
+    const r = depth * 0.52;
+    let path = `M 0,${crY}`;
+    for (let i = 0; i < 3; i++) {
+      const xm = i * pw + pw/2;
+      const xL = xm - pw/2 + 2, xR = xm + pw/2 - 2;
+      // arc down then back up
+      path += ` L ${xL},${crY}`;
+      path += ` Q ${xm},${rootY + r*0.3} ${xR},${crY}`;
+      if (i < 2) path += ` L ${(i+1)*pw},${crY}`;
+    }
+    path += ` L ${W},${crY}`;
+    return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+      <rect width="${W}" height="${H}" fill="none"/>
+      <line x1="0" y1="${crY}" x2="${W}" y2="${crY}" stroke="${stroke}" stroke-width="2.5"/>
+      <path d="${path} Z" fill="${fill}" stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round"/>
+    </svg>`;
+  }
+
+  switch (profile) {
+    case 'iso60':       return vThread(30,    true,  false, false);
+    case 'whitworth55': return vThread(27.5,  true,  true,  false);
+    case 'ba475':       return vThread(23.75, true,  true,  false);
+    case 'npt60':       return vThread(30,    false, false, true);
+    case 'flat60':      return vThread(30,    false, false, false);
+    case 'acme29':      return acmeSVG();
+    case 'buttress':    return buttressSVG();
+    case 'square0':     return squareSVG();
+    case 'knuckle30':   return knuckleSVG();
+    default:            return vThread(30, true, false, false);
+  }
+}
+
+/* =======================================================================
+   SECTION 11 — SETTINGS MODAL
+======================================================================= */
+function renderSettings() {
+  const body = document.getElementById('settings-body');
+
+  // Standards section
+  let html = `<div class="settings-section">
+    <div class="settings-section-title">Thread Standards to Search</div>`;
+
+  for (const [key, meta] of Object.entries(STANDARDS)) {
+    const checked = state.selected.has(key);
+    const metricCls = meta.metric ? 'metric' : 'imperial';
+    const metricLabel = meta.metric ? 'Metric' : 'Imperial';
+    html += `<div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-name">
+          ${meta.flag} <span>${meta.full}</span>
+          <span class="metric-pill ${metricCls}">${metricLabel}</span>
+        </div>
+        <div class="toggle-desc">${meta.desc}</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" ${checked ? 'checked' : ''} data-std="${key}" onchange="toggleStandard('${key}',this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>`;
+  }
+
+  html += `<div class="settings-section-footer">At least one standard must be selected.</div>
+  </div>`;
+
+  // Tolerance section
+  const tc = toleranceColor(state.tolerance);
+  html += `<div class="settings-section">
+    <div class="settings-section-title">Tolerance</div>
+    <div class="toggle-row" style="display:block">
+      <div class="tolerance-header" style="margin-bottom:8px">
+        <span style="font-size:14px;font-weight:500">Default Tolerance</span>
+        <span class="tolerance-value" id="settings-tol-val" style="color:${tc}">±${state.tolerance}%</span>
+      </div>
+      <input type="range" id="settings-tol-slider" min="1" max="15" value="${state.tolerance}"
+        style="color:${tc};accent-color:${tc}"
+        oninput="settingsToleranceChange(this.value)">
+      <div class="settings-section-footer" style="margin-top:6px">Measurements within this percentage of a nominal value will be flagged as within tolerance.</div>
+    </div>
+  </div>`;
+
+  // Database info
+  html += `<div class="settings-section">
+    <div class="settings-section-title">Database</div>
+    <div class="settings-section-footer" style="margin-bottom:8px">
+      Thread data based on published ISO, ASME, BS, ANSI, ASA, and DIN standards.
+      Always verify critical measurements with calibrated instruments.
+    </div>`;
+
+  for (const [key, meta] of Object.entries(STANDARDS)) {
+    html += `<div class="toggle-row" style="padding:6px 0">
+      <span style="font-size:13px;color:var(--text2)">${meta.full}: ${meta.desc}</span>
+    </div>`;
+  }
+  html += `</div>`;
+
+  // Legal
+  html += `<div class="settings-section">
+    <div class="settings-section-title">Legal</div>
+    <a href="https://threadchaserapp.github.io/ThreadChaser-Legal/TERMS" target="_blank" class="toggle-row" style="text-decoration:none;color:inherit;display:flex">
+      <span style="flex:1;font-size:14px">📄 Terms of Use</span><span style="color:var(--text3)">↗</span>
+    </a>
+    <a href="https://threadchaserapp.github.io/ThreadChaser-Legal/PRIVACY" target="_blank" class="toggle-row" style="text-decoration:none;color:inherit;display:flex">
+      <span style="flex:1;font-size:14px">🛡 Privacy Policy</span><span style="color:var(--text3)">↗</span>
+    </a>
+    <a href="https://threadchaserapp.github.io/ThreadChaser-Legal/DISCLAIMER" target="_blank" class="toggle-row" style="text-decoration:none;color:inherit;display:flex;border-bottom:none">
+      <span style="flex:1;font-size:14px">⚠️ Disclaimer</span><span style="color:var(--text3)">↗</span>
+    </a>
+  </div>`;
+
+  body.innerHTML = html;
+}
+
+function toggleStandard(key, checked) {
+  if (!checked && state.selected.size <= 1) {
+    // can't deselect last
+    document.querySelector(`input[data-std="${key}"]`).checked = true;
+    return;
+  }
+  if (checked) state.selected.add(key);
+  else state.selected.delete(key);
+  updateSearchBtn();
+}
+
+function settingsToleranceChange(val) {
+  state.tolerance = parseInt(val);
+  const c = toleranceColor(state.tolerance);
+  const v = document.getElementById('settings-tol-val');
+  const s = document.getElementById('settings-tol-slider');
+  v.textContent = `±${state.tolerance}%`;
+  v.style.color = c;
+  s.style.accentColor = c;
+  // sync main slider
+  document.getElementById('tol-slider').value = state.tolerance;
+  updateToleranceDisplay();
+}
+
+/* =======================================================================
+   SECTION 12 — REFERENCE TABLES MODAL
+======================================================================= */
+const REF_STANDARDS = Object.keys(STANDARDS).filter(k => k !== 'UNEF');
+let activeRefTab = REF_STANDARDS[0];
+
+function threadDepthMM(t) {
+  // ISO 60°: h3 = 0.5413 * p; Whitworth 55°: ~0.6403*p; ACME: 0.5*p; Square: 0.5*p
+  const depthMap = {
+    M:'0.5413', MF:'0.5413', UNC:'0.5413', UNF:'0.5413', UNEF:'0.5413',
+    BSP:'0.6403', BSW:'0.6403', BSF:'0.6403',
+    BA:'0.60', NPT:'0.5413', ANC:'0.5413', ANF:'0.5413',
+    ACME:'0.50', Buttress:'0.60', Square:'0.50', Knuckle:'0.541'
+  };
+  const factor = parseFloat(depthMap[t.std] || '0.5413');
+  return (factor * t.p).toFixed(3);
+}
+
+function renderRefTabs() {
+  const tabsEl = document.getElementById('ref-tabs');
+  tabsEl.innerHTML = REF_STANDARDS.map(k =>
+    `<button class="ref-tab ${k===activeRefTab?'active':''}" onclick="switchRefTab('${k}')">${k}</button>`
+  ).join('');
+}
+
+function switchRefTab(key) {
+  activeRefTab = key;
+  renderRefTabs();
+  renderRefTable();
+}
+
+function renderRefTable() {
+  const threads = DB.filter(t => t.std === activeRefTab);
+  const meta = STANDARDS[activeRefTab] || {};
+  const showTPI = !['M','MF','Square','Knuckle'].includes(activeRefTab);
+
+  const thead = document.getElementById('ref-thead');
+  const tbody = document.getElementById('ref-tbody');
+
+  thead.innerHTML = `<tr>
+    <th>Size</th>
+    <th>Pitch (mm)</th>
+    ${showTPI ? '<th>TPI</th>' : ''}
+    <th>Major Ø (mm)</th>
+    <th>Pitch Ø (mm)</th>
+    <th>Minor Ø (mm)</th>
+    <th>Thread Depth (mm)</th>
+    <th>Tap Drill (mm)</th>
+  </tr>`;
+
+  if (!threads.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text2);padding:20px">No data for this standard</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = threads.map(t => {
+    const tap = tappingDrill(t).toFixed(3);
+    const td = threadDepthMM(t);
+    const tpi = showTPI ? `<td>${(25.4/t.p).toFixed(2)}</td>` : '';
+    const displayName = threadDisplayName(t);
+    return `<tr>
+      <td class="size-col">${displayName}</td>
+      <td>${t.p.toFixed(3)}</td>
+      ${tpi}
+      <td>${t.D.toFixed(3)}</td>
+      <td>${t.Dp.toFixed(3)}</td>
+      <td>${t.Dm.toFixed(3)}</td>
+      <td>${td}</td>
+      <td>${tap}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* =======================================================================
+   SECTION 13 — EVENT WIRING
+======================================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Unit segmented control
+  document.getElementById('unit-seg').addEventListener('click', e => {
+    const btn = e.target.closest('[data-unit]');
+    if (!btn) return;
+    const newUnit = btn.dataset.unit;
+    convertInputs(state.inputUnit, newUnit);
+    state.inputUnit = newUnit;
+    state.prevUnit  = newUnit;
+    // sync input fields
+    document.getElementById('inp-major').value = state.majorText;
+    document.getElementById('inp-pitch').value = state.pitchText;
+    document.querySelectorAll('#unit-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.unit === newUnit));
+    updateUnitLabels();
+    updateInputBorders();
+    updateSearchBtn();
+  });
+
+  // Thread type segmented control
+  document.getElementById('type-seg').addEventListener('click', e => {
+    const btn = e.target.closest('[data-type]');
+    if (!btn) return;
+    state.threadType = btn.dataset.type;
+    document.querySelectorAll('#type-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.type === state.threadType));
+    updateFieldVisibility();
+    updateSearchBtn();
+  });
+
+  // Number inputs
+  const inputMap = [
+    ['inp-major', 'majorText'],
+    ['inp-minor', 'minorText'],
+    ['inp-pitch', 'pitchText'],
+    ['inp-tpi',   'tpiText'],
+  ];
+  for (const [id, key] of inputMap) {
+    document.getElementById(id).addEventListener('input', e => {
+      state[key] = e.target.value;
+      updateInputBorders();
+      updateSearchBtn();
+    });
+  }
+
+  // Tolerance slider
+  document.getElementById('tol-slider').addEventListener('input', e => {
+    state.tolerance = parseInt(e.target.value);
+    updateToleranceDisplay();
+  });
+
+  // Search
+  document.getElementById('btn-search').addEventListener('click', doSearch);
+
+  // Reset
+  document.getElementById('btn-reset').addEventListener('click', doReset);
+
+  // Settings modal
+  document.getElementById('btn-settings').addEventListener('click', () => {
+    renderSettings();
+    document.getElementById('modal-settings').classList.add('open');
+  });
+  document.getElementById('close-settings').addEventListener('click', () => {
+    document.getElementById('modal-settings').classList.remove('open');
+  });
+
+  // Reference modal
+  document.getElementById('btn-reference').addEventListener('click', () => {
+    renderRefTabs();
+    renderRefTable();
+    document.getElementById('modal-reference').classList.add('open');
+  });
+  document.getElementById('close-reference').addEventListener('click', () => {
+    document.getElementById('modal-reference').classList.remove('open');
+  });
+
+  // Detail modal
+  document.getElementById('close-detail').addEventListener('click', () => {
+    document.getElementById('modal-detail').classList.remove('open');
+  });
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+  });
+
+  // Enter key triggers search
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && canSearch()) doSearch();
+  });
+
+  // Initial UI state
+  updateToleranceDisplay();
+  updateUnitLabels();
+  updateFieldVisibility();
+  updateSearchBtn();
+});
+</script>
+</body>
+</html>
