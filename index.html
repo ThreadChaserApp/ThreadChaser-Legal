@@ -297,6 +297,74 @@
     .search-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 
     /* =====================================================================
+       HOW TO GUIDE
+    ===================================================================== */
+    .how-to-card { padding: 0; overflow: hidden; }
+
+    .how-to-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .how-to-toggle-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .how-to-toggle-left svg { width: 16px; height: 16px; fill: none; stroke: var(--accent2); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+    .how-to-chevron { width: 16px; height: 16px; fill: none; stroke: var(--text3); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s; flex-shrink: 0; }
+    .how-to-toggle[aria-expanded="true"] .how-to-chevron { transform: rotate(180deg); }
+
+    .how-to-body {
+      display: none;
+      padding: 0 16px 16px;
+      border-top: 1px solid var(--border);
+    }
+    .how-to-body.open { display: block; }
+
+    .how-to-steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding-top: 14px;
+    }
+
+    .how-to-steps li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent2);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+
+    .how-to-steps strong { font-size: 13px; font-weight: 600; display: block; margin-bottom: 2px; }
+    .how-to-steps p { font-size: 13px; color: var(--text2); line-height: 1.5; margin: 0; }
+
+    /* =====================================================================
        ERROR BANNER
     ===================================================================== */
     .error-banner {
@@ -831,7 +899,6 @@
         <div class="segmented" id="unit-seg">
           <button class="seg-btn active" data-unit="mm">mm</button>
           <button class="seg-btn" data-unit="inch">Inch</button>
-          <button class="seg-btn" data-unit="tpi">TPI</button>
         </div>
       </div>
       <div class="seg-group">
@@ -909,6 +976,56 @@
     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     Identify Thread
   </button>
+
+  <!-- How To Guide -->
+  <div class="card how-to-card" id="how-to-card">
+    <button class="how-to-toggle" id="how-to-toggle" aria-expanded="false">
+      <span class="how-to-toggle-left">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        How to Identify a Thread
+      </span>
+      <svg class="how-to-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="how-to-body" id="how-to-body">
+      <ol class="how-to-steps">
+        <li>
+          <span class="step-num">1</span>
+          <div>
+            <strong>Select units</strong>
+            <p>Choose <em>mm</em> or <em>Inch</em> depending on how you are measuring.</p>
+          </div>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <div>
+            <strong>Select thread type</strong>
+            <p>Use <em>External</em> for bolts/studs, <em>Internal</em> for nuts/tapped holes.</p>
+          </div>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <div>
+            <strong>Measure the diameter</strong>
+            <p>For external threads, measure the outer (major) diameter with calipers. For internal threads, measure the minor (inner) diameter of the bore.</p>
+          </div>
+        </li>
+        <li>
+          <span class="step-num">4</span>
+          <div>
+            <strong>Measure the pitch or TPI</strong>
+            <p>Use a thread pitch gauge or count the number of thread crests over 25.4 mm (1 inch) to find TPI. Alternatively enter the pitch directly in mm or inches.</p>
+          </div>
+        </li>
+        <li>
+          <span class="step-num">5</span>
+          <div>
+            <strong>Tap Identify Thread</strong>
+            <p>Results are ranked by match quality. Green = Excellent, Blue = Good, Orange = Acceptable.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </div>
 
   <!-- Results Section -->
   <div id="results-section" class="hidden">
@@ -1386,7 +1503,7 @@ function pitchMM() {
   if (state.pitchText) {
     const v = parseFloat(state.pitchText);
     if (v > 0) {
-      if (state.inputUnit === 'mm' || state.inputUnit === 'tpi') return state.inputUnit === 'tpi' ? 25.4/v : v;
+      if (state.inputUnit === 'mm') return v;
       return v * 25.4;
     }
   }
@@ -1425,13 +1542,8 @@ function convertInputs(oldUnit, newUnit) {
 
   const pitch = parseFloat(state.pitchText);
   if (pitch > 0) {
-    let pmm;
-    if (oldUnit === 'mm')   pmm = pitch;
-    else if (oldUnit === 'inch') pmm = pitch * 25.4;
-    else pmm = 25.4 / pitch; // tpi
-    if (newUnit === 'mm')   state.pitchText = trimNum(pmm, 3);
-    else if (newUnit === 'inch') state.pitchText = trimNum(pmm/25.4, 4);
-    else state.pitchText = trimNum(25.4/pmm, 2); // tpi
+    const pmm = oldUnit === 'inch' ? pitch * 25.4 : pitch;
+    state.pitchText = newUnit === 'inch' ? trimNum(pmm/25.4, 4) : trimNum(pmm, 3);
   }
 }
 
@@ -1595,11 +1707,11 @@ function updateToleranceDisplay() {
 function updateUnitLabels() {
   const u = state.inputUnit;
   const dLabel = u === 'inch' ? 'Major Diameter (inches)' : 'Major Diameter (mm)';
-  const pLabel = u === 'mm'   ? 'Pitch (mm)' : u === 'inch' ? 'Pitch (inches)' : 'Threads per Inch (TPI)';
+  const pLabel = u === 'mm' ? 'Pitch (mm)' : 'Pitch (inches)';
   const dUnit  = u === 'inch' ? '"' : 'mm';
-  const pUnit  = u === 'tpi'  ? 'TPI' : u === 'inch' ? '"' : 'mm';
+  const pUnit  = u === 'inch' ? '"' : 'mm';
   const dPH    = u === 'inch' ? 'e.g. 0.394' : 'e.g. 10.0';
-  const pPH    = u === 'mm'   ? 'e.g. 1.25'  : u === 'inch' ? 'e.g. 0.05' : 'e.g. 20';
+  const pPH    = u === 'mm'   ? 'e.g. 1.25'  : 'e.g. 0.05';
 
   document.getElementById('label-major').textContent = dLabel;
   document.getElementById('unit-major').textContent  = dUnit;
@@ -2130,6 +2242,15 @@ function renderRefTable() {
 ======================================================================= */
 document.addEventListener('DOMContentLoaded', () => {
 
+  // How To guide toggle
+  document.getElementById('how-to-toggle').addEventListener('click', () => {
+    const toggle = document.getElementById('how-to-toggle');
+    const body   = document.getElementById('how-to-body');
+    const open   = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+    body.classList.toggle('open', !open);
+  });
+
   // Unit segmented control
   document.getElementById('unit-seg').addEventListener('click', e => {
     const btn = e.target.closest('[data-unit]');
@@ -2229,3 +2350,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
