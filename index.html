@@ -113,6 +113,15 @@
       gap: 14px;
     }
 
+    .site-tagline {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text2);
+      line-height: 1.5;
+      text-align: center;
+      padding: 0 4px;
+    }
+
     /* =====================================================================
        CARDS
     ===================================================================== */
@@ -560,15 +569,20 @@
       flex-shrink: 0;
     }
     .modal-title { font-size: 17px; font-weight: 600; }
-    .modal-done {
-      background: none;
+    .modal-close-btn {
+      background: var(--card2);
       border: none;
       cursor: pointer;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--accent2);
-      padding: 4px 8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text2);
+      flex-shrink: 0;
     }
+    .modal-close-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
 
     .modal-body {
       overflow-y: auto;
@@ -886,6 +900,8 @@
 ===================================================================== -->
 <main class="main-content">
 
+  <h2 class="site-tagline">Identify external and internal threads by entering your measurements — instantly matched against metric, imperial, and specialty thread standards.</h2>
+
   <!-- Input Card -->
   <div class="card" id="input-card">
 
@@ -1045,7 +1061,9 @@
   <div class="modal-sheet">
     <div class="modal-header">
       <span class="modal-title">Settings</span>
-      <button class="modal-done" id="close-settings">Done</button>
+      <button class="modal-close-btn" id="close-settings" title="Close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <div class="modal-body" id="settings-body">
       <!-- populated by JS -->
@@ -1060,7 +1078,9 @@
   <div class="modal-sheet">
     <div class="modal-header">
       <span class="modal-title">Reference Tables</span>
-      <button class="modal-done" id="close-reference">Done</button>
+      <button class="modal-close-btn" id="close-reference" title="Close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <div class="modal-body">
       <div class="ref-tabs" id="ref-tabs"></div>
@@ -1081,7 +1101,9 @@
   <div class="modal-sheet">
     <div class="modal-header" style="border-bottom:none;padding-bottom:8px;">
       <span></span>
-      <button class="modal-done" id="close-detail">Done</button>
+      <button class="modal-close-btn" id="close-detail" title="Close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <div class="modal-body" id="detail-body" style="padding-top:0;">
       <!-- populated by JS -->
@@ -1726,8 +1748,7 @@ function updateFieldVisibility() {
   document.getElementById('field-major').classList.toggle('hidden', isInternal);
   document.getElementById('field-minor').classList.toggle('hidden', !isInternal);
 
-  const showTPI = !isInternal;
-  document.getElementById('field-tpi').classList.toggle('hidden', !showTPI);
+  document.getElementById('field-tpi').classList.remove('hidden');
 }
 
 function updateInputBorders() {
@@ -2350,4 +2371,5 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
