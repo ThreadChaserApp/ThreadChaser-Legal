@@ -560,12 +560,17 @@
       z-index: 200;
       align-items: flex-end;
       justify-content: center;
+      /* leave room for status bar / notch at top */
+      padding-top: max(env(safe-area-inset-top), 44px);
       animation: fadeIn .15s ease;
     }
     .modal-overlay.open { display: flex; }
 
     @media (min-width: 600px) {
-      .modal-overlay { align-items: center; }
+      .modal-overlay {
+        align-items: center;
+        padding-top: 0;
+      }
     }
 
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -576,7 +581,7 @@
       border-radius: 20px 20px 0 0;
       width: 100%;
       max-width: 680px;
-      max-height: 92vh;
+      max-height: 100%;
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -2353,26 +2358,30 @@ function buildThreadDiagramSVG(std) {
     surface += `L${px(nTeeth,0)},${Yr}`;
 
   } else if (profile === 'whitworth55') {
+    // Symmetric: rounded root curves into straight 55° flanks, rounded crest flat ~0.1P
     for (let i = 0; i < nTeeth; i++) {
       if (!i) surface += `M${px(i,0)},${Yr} `;
-      surface += `C${px(i,.20)},${Yr} ${px(i,.42)},${Yc} ${px(i,.50)},${Yc} L${px(i,.65)},${Yc} C${px(i,.73)},${Yc} ${px(i,.96)},${Yr} ${px(i,1)},${Yr} `;
+      surface += `C${px(i,.14)},${Yr} ${px(i,.36)},${Yc} ${px(i,.45)},${Yc} L${px(i,.55)},${Yc} C${px(i,.64)},${Yc} ${px(i,.86)},${Yr} ${px(i,1)},${Yr} `;
     }
 
   } else if (profile === 'ba475') {
+    // BA: tighter 47.5° angle, more rounded, smaller crest flat ~0.06P
     for (let i = 0; i < nTeeth; i++) {
       if (!i) surface += `M${px(i,0)},${Yr} `;
-      surface += `C${px(i,.22)},${Yr} ${px(i,.44)},${Yc} ${px(i,.50)},${Yc} L${px(i,.70)},${Yc} C${px(i,.78)},${Yc} ${px(i,.96)},${Yr} ${px(i,1)},${Yr} `;
+      surface += `C${px(i,.16)},${Yr} ${px(i,.40)},${Yc} ${px(i,.47)},${Yc} L${px(i,.53)},${Yc} C${px(i,.60)},${Yc} ${px(i,.84)},${Yr} ${px(i,1)},${Yr} `;
     }
 
   } else if (profile === 'acme29') {
-    const rW=0.20, sX=0.17, cW=1-2*sX-rW;
+    // ACME: equal root & crest flats ~37% each, narrow 13% flanks at 14.5°
+    const rW=0.37, sX=0.13, cW=0.37;
     for (let i = 0; i < nTeeth; i++) {
       surface += `${i?'L':'M'}${px(i,0)},${Yr} L${px(i,rW)},${Yr} L${px(i,rW+sX)},${Yc} L${px(i,rW+sX+cW)},${Yc} `;
     }
     surface += `L${px(nTeeth,0)},${Yr}`;
 
   } else if (profile === 'buttress') {
-    const rW=0.18, stX=0.10, cW=0.32;
+    // Buttress: near-vertical load flank (5%), wide clearance flank (45%), equal root/crest flats (25%)
+    const rW=0.20, stX=0.05, cW=0.25;
     for (let i = 0; i < nTeeth; i++) {
       surface += `${i?'L':'M'}${px(i,0)},${Yr} L${px(i,rW)},${Yr} L${px(i,rW+stX)},${Yc} L${px(i,rW+stX+cW)},${Yc} `;
     }
