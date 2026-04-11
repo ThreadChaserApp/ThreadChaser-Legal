@@ -2026,20 +2026,15 @@ function renderDetail(r) {
   </div>`;
 
   // Thread profile diagram
+  const angleTxt = (std.angle === 0) ? '0° (Square flanks)' : `${std.angle || 60}° thread angle`;
   html += `
   <div class="detail-section">
     <div class="detail-section-title">Thread Profile</div>
-    <div class="profile-svg-wrap">
-      ${buildProfileSVG(std.profile || 'iso60', std.angle || 60)}
-    </div>
-    <div class="profile-info-grid">
-      <div class="profile-info-item">
-        <div class="profile-info-label">Thread Angle</div>
-        <div class="profile-info-value">${std.angle || 60}°</div>
-      </div>
-      <div class="profile-info-item">
-        <div class="profile-info-label">Profile Type</div>
-        <div class="profile-info-value">${profileTypeName(std.profile)}</div>
+    <div class="ref-diagram-wrap">
+      ${buildThreadDiagramSVG(t.std)}
+      <div class="ref-diagram-meta">
+        <span class="ref-diagram-desc">${profileTypeName(std.profile)}</span>
+        <span class="ref-diagram-angle">${angleTxt}</span>
       </div>
     </div>
   </div>`;
@@ -2624,5 +2619,6 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
