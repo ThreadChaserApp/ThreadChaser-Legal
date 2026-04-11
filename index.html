@@ -113,6 +113,18 @@
       gap: 14px;
     }
 
+    .disclaimer-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      font-size: 11px;
+      color: var(--text3);
+      line-height: 1.5;
+      text-align: left;
+      padding: 0 2px;
+    }
+    .disclaimer-note svg { width: 13px; height: 13px; fill: none; stroke: var(--text3); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; margin-top: 1px; }
+
     .site-tagline {
       font-size: 13px;
       font-weight: 400;
@@ -371,7 +383,25 @@
     }
 
     .how-to-steps strong { font-size: 13px; font-weight: 600; display: block; margin-bottom: 2px; }
-    .how-to-steps p { font-size: 13px; color: var(--text2); line-height: 1.5; margin: 0; }
+    .how-to-steps p { font-size: 13px; color: var(--text2); line-height: 1.8; margin: 0; }
+
+    .quality-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 99px;
+      padding: 2px 7px 2px 5px;
+      margin: 0 2px;
+      white-space: nowrap;
+    }
+    .quality-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
 
     /* =====================================================================
        ERROR BANNER
@@ -551,6 +581,7 @@
       display: flex;
       flex-direction: column;
       animation: slideUp .2s ease;
+      padding-bottom: env(safe-area-inset-bottom);
     }
 
     @media (min-width: 600px) {
@@ -564,25 +595,27 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 18px 12px;
+      padding: 18px 18px 14px;
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
+      min-height: 60px;
     }
     .modal-title { font-size: 17px; font-weight: 600; }
     .modal-close-btn {
       background: var(--card2);
       border: none;
       cursor: pointer;
-      width: 32px;
-      height: 32px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text2);
+      color: var(--text);
       flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
     }
-    .modal-close-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
+    .modal-close-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
 
     .modal-body {
       overflow-y: auto;
@@ -701,6 +734,42 @@
       background: var(--accent2);
       border-color: var(--accent2);
       color: white;
+    }
+
+    /* =====================================================================
+       THREAD PROFILE DIAGRAM
+    ===================================================================== */
+    .ref-diagram-wrap {
+      margin-bottom: 16px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .ref-diagram-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--card2);
+      border-top: 1px solid var(--border);
+      gap: 8px;
+    }
+    .ref-diagram-desc {
+      font-size: 11px;
+      color: var(--text2);
+      flex: 1;
+    }
+    .ref-diagram-angle {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent2);
+      white-space: nowrap;
+    }
+    .ref-diagram-note {
+      font-size: 10px;
+      color: var(--text3);
+      font-style: italic;
+      white-space: nowrap;
     }
 
     .ref-table-wrap { overflow-x: auto; }
@@ -1036,7 +1105,12 @@
           <span class="step-num">5</span>
           <div>
             <strong>Tap Identify Thread</strong>
-            <p>Results are ranked by match quality. Green = Excellent, Blue = Good, Orange = Acceptable.</p>
+            <p>Results are ranked by match quality.
+              <span class="quality-pill" style="background:var(--green-bg);color:var(--green)"><span class="quality-dot" style="background:var(--green)"></span>Excellent</span>
+              <span class="quality-pill" style="background:var(--blue-bg);color:var(--blue)"><span class="quality-dot" style="background:var(--blue)"></span>Good</span>
+              <span class="quality-pill" style="background:var(--orange-bg);color:var(--orange)"><span class="quality-dot" style="background:var(--orange)"></span>Acceptable</span>
+              <span class="quality-pill" style="background:var(--red-bg);color:var(--red)"><span class="quality-dot" style="background:var(--red)"></span>Poor</span>
+            </p>
           </div>
         </li>
       </ol>
@@ -1051,6 +1125,11 @@
     </div>
     <div id="results-list" class="mt12" style="display:flex;flex-direction:column;gap:10px;"></div>
   </div>
+
+  <p class="disclaimer-note">
+    <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Always verify critical dimensions directly against the relevant published standard, and use calibrated measurement instruments.
+  </p>
 
 </main>
 
@@ -1084,6 +1163,7 @@
     </div>
     <div class="modal-body">
       <div class="ref-tabs" id="ref-tabs"></div>
+      <div id="ref-diagram"></div>
       <div class="ref-table-wrap">
         <table class="ref-table" id="ref-table">
           <thead id="ref-thead"></thead>
@@ -1232,6 +1312,49 @@ const DB = [
   {name:"1-1/4-12", D:31.750, p:2.117, std:"UNF", Dp:30.229,  Dm:28.918},
   {name:"1-3/8-12", D:34.925, p:2.117, std:"UNF", Dp:33.404,  Dm:32.093},
   {name:"1-1/2-12", D:38.100, p:2.117, std:"UNF", Dp:36.579,  Dm:35.268},
+
+  // UNEF (ASME B1.1 — Unified Extra Fine, up to 68 mm)
+  {name:"#12-32",      D:5.486,  p:0.794, std:"UNEF", Dp:4.970,  Dm:4.627},
+  {name:"1/4-32",      D:6.350,  p:0.794, std:"UNEF", Dp:5.834,  Dm:5.491},
+  {name:"5/16-32",     D:7.938,  p:0.794, std:"UNEF", Dp:7.422,  Dm:7.079},
+  {name:"3/8-32",      D:9.525,  p:0.794, std:"UNEF", Dp:9.009,  Dm:8.666},
+  {name:"7/16-28",     D:11.113, p:0.907, std:"UNEF", Dp:10.524, Dm:10.131},
+  {name:"1/2-28",      D:12.700, p:0.907, std:"UNEF", Dp:12.111, Dm:11.718},
+  {name:"9/16-24",     D:14.288, p:1.058, std:"UNEF", Dp:13.600, Dm:13.142},
+  {name:"5/8-24",      D:15.875, p:1.058, std:"UNEF", Dp:15.187, Dm:14.729},
+  {name:"11/16-24",    D:17.463, p:1.058, std:"UNEF", Dp:16.775, Dm:16.317},
+  {name:"3/4-20",      D:19.050, p:1.270, std:"UNEF", Dp:18.225, Dm:17.675},
+  {name:"13/16-20",    D:20.638, p:1.270, std:"UNEF", Dp:19.813, Dm:19.263},
+  {name:"7/8-20",      D:22.225, p:1.270, std:"UNEF", Dp:21.400, Dm:20.850},
+  {name:"15/16-20",    D:23.813, p:1.270, std:"UNEF", Dp:22.988, Dm:22.438},
+  {name:"1-20",        D:25.400, p:1.270, std:"UNEF", Dp:24.575, Dm:24.025},
+  {name:"1-1/16-18",   D:26.988, p:1.411, std:"UNEF", Dp:26.071, Dm:25.460},
+  {name:"1-1/8-18",    D:28.575, p:1.411, std:"UNEF", Dp:27.658, Dm:27.047},
+  {name:"1-3/16-18",   D:30.163, p:1.411, std:"UNEF", Dp:29.246, Dm:28.635},
+  {name:"1-1/4-18",    D:31.750, p:1.411, std:"UNEF", Dp:30.833, Dm:30.222},
+  {name:"1-5/16-18",   D:33.338, p:1.411, std:"UNEF", Dp:32.421, Dm:31.810},
+  {name:"1-3/8-18",    D:34.925, p:1.411, std:"UNEF", Dp:34.008, Dm:33.397},
+  {name:"1-7/16-18",   D:36.513, p:1.411, std:"UNEF", Dp:35.596, Dm:34.985},
+  {name:"1-1/2-18",    D:38.100, p:1.411, std:"UNEF", Dp:37.183, Dm:36.572},
+  {name:"1-9/16-18",   D:39.688, p:1.411, std:"UNEF", Dp:38.771, Dm:38.160},
+  {name:"1-5/8-18",    D:41.275, p:1.411, std:"UNEF", Dp:40.358, Dm:39.747},
+  {name:"1-11/16-18",  D:42.863, p:1.411, std:"UNEF", Dp:41.946, Dm:41.335},
+  {name:"1-3/4-16",    D:44.450, p:1.588, std:"UNEF", Dp:43.419, Dm:42.731},
+  {name:"1-13/16-16",  D:46.038, p:1.588, std:"UNEF", Dp:45.007, Dm:44.319},
+  {name:"1-7/8-16",    D:47.625, p:1.588, std:"UNEF", Dp:46.594, Dm:45.906},
+  {name:"1-15/16-16",  D:49.213, p:1.588, std:"UNEF", Dp:48.182, Dm:47.494},
+  {name:"2-16",        D:50.800, p:1.588, std:"UNEF", Dp:49.769, Dm:49.081},
+  {name:"2-1/16-16",   D:52.388, p:1.588, std:"UNEF", Dp:51.357, Dm:50.669},
+  {name:"2-1/8-16",    D:53.975, p:1.588, std:"UNEF", Dp:52.944, Dm:52.256},
+  {name:"2-3/16-16",   D:55.563, p:1.588, std:"UNEF", Dp:54.532, Dm:53.844},
+  {name:"2-1/4-16",    D:57.150, p:1.588, std:"UNEF", Dp:56.119, Dm:55.431},
+  {name:"2-5/16-16",   D:58.738, p:1.588, std:"UNEF", Dp:57.707, Dm:57.019},
+  {name:"2-3/8-16",    D:60.325, p:1.588, std:"UNEF", Dp:59.294, Dm:58.606},
+  {name:"2-7/16-16",   D:61.913, p:1.588, std:"UNEF", Dp:60.882, Dm:60.194},
+  {name:"2-1/2-16",    D:63.500, p:1.588, std:"UNEF", Dp:62.469, Dm:61.781},
+  {name:"2-9/16-16",   D:65.088, p:1.588, std:"UNEF", Dp:64.057, Dm:63.369},
+  {name:"2-5/8-16",    D:66.675, p:1.588, std:"UNEF", Dp:65.644, Dm:64.956},
+  {name:"2-11/16-16",  D:68.263, p:1.588, std:"UNEF", Dp:67.232, Dm:66.544},
 
   // BSP
   {name:"1/16\"", D:7.723,  p:0.907, std:"BSP", Dp:7.142,  Dm:6.561},
@@ -1420,7 +1543,7 @@ const STANDARDS = {
   "MF":      { full:"Metric Fine (MF)",           flag:"🌍", metric:true,  desc:"ISO 724 · M1–M48 fine pitch",                   angle:60,  profile:"iso60" },
   "UNC":     { full:"Unified National Coarse",    flag:"🇺🇸", metric:false, desc:"ASME B1.1 · #1–1½\" UNC",                      angle:60,  profile:"iso60" },
   "UNF":     { full:"Unified National Fine",      flag:"🇺🇸", metric:false, desc:"ASME B1.1 · #0–1½\" UNF",                      angle:60,  profile:"iso60" },
-  "UNEF":    { full:"Unified Extra Fine",         flag:"🇺🇸", metric:false, desc:"ASME B1.1 · UNEF series",                      angle:60,  profile:"iso60" },
+  "UNEF":    { full:"Unified Extra Fine",         flag:"🇺🇸", metric:false, desc:"ASME B1.1 · #12–2-11/16\" UNEF (up to 68 mm)", angle:60,  profile:"iso60" },
   "BSP":     { full:"BSP (Pipe)",                 flag:"🇬🇧", metric:false, desc:"ISO 228 / BS 2779 · 1/16\"–2\" pipe thread",    angle:55,  profile:"whitworth55" },
   "BSW":     { full:"BSW (Whitworth)",            flag:"🇬🇧", metric:false, desc:"BS 84 · 1/8\"–2\" Whitworth fastener",          angle:55,  profile:"whitworth55" },
   "BSF":     { full:"BSF (Whitworth Fine)",       flag:"🇬🇧", metric:false, desc:"BS 84 · 3/16\"–2\" Whitworth fine",             angle:55,  profile:"whitworth55" },
@@ -2188,7 +2311,7 @@ function settingsToleranceChange(val) {
 /* =======================================================================
    SECTION 12 — REFERENCE TABLES MODAL
 ======================================================================= */
-const REF_STANDARDS = Object.keys(STANDARDS).filter(k => k !== 'UNEF');
+const REF_STANDARDS = Object.keys(STANDARDS);
 let activeRefTab = REF_STANDARDS[0];
 
 function threadDepthMM(t) {
@@ -2201,6 +2324,104 @@ function threadDepthMM(t) {
   };
   const factor = parseFloat(depthMap[t.std] || '0.5413');
   return (factor * t.p).toFixed(3);
+}
+
+function buildThreadDiagramSVG(std) {
+  const meta = STANDARDS[std];
+  if (!meta) return '';
+  const { profile } = meta;
+
+  const VW = 400, VH = 126;
+  const x0 = 50, padR = 14, padT = 24;
+  const drawW = VW - x0 - padR;
+  const drawH = 66;
+  const nTeeth = 3;
+  const P = drawW / nTeeth;
+  const Yc = padT;
+  const Yr = padT + drawH;
+  const Ybase = Yr + 16;
+  const paY = Ybase + 7;
+
+  const px = (tooth, nx) => (x0 + (tooth + nx) * P).toFixed(1);
+
+  let surface = '';
+
+  if (profile === 'iso60' || profile === 'flat60' || profile === 'npt60') {
+    for (let i = 0; i < nTeeth; i++) {
+      surface += `${i?'L':'M'}${px(i,0)},${Yr} L${px(i,.25)},${Yr} L${px(i,.5625)},${Yc} L${px(i,.6875)},${Yc} `;
+    }
+    surface += `L${px(nTeeth,0)},${Yr}`;
+
+  } else if (profile === 'whitworth55') {
+    for (let i = 0; i < nTeeth; i++) {
+      if (!i) surface += `M${px(i,0)},${Yr} `;
+      surface += `C${px(i,.20)},${Yr} ${px(i,.42)},${Yc} ${px(i,.50)},${Yc} L${px(i,.65)},${Yc} C${px(i,.73)},${Yc} ${px(i,.96)},${Yr} ${px(i,1)},${Yr} `;
+    }
+
+  } else if (profile === 'ba475') {
+    for (let i = 0; i < nTeeth; i++) {
+      if (!i) surface += `M${px(i,0)},${Yr} `;
+      surface += `C${px(i,.22)},${Yr} ${px(i,.44)},${Yc} ${px(i,.50)},${Yc} L${px(i,.70)},${Yc} C${px(i,.78)},${Yc} ${px(i,.96)},${Yr} ${px(i,1)},${Yr} `;
+    }
+
+  } else if (profile === 'acme29') {
+    const rW=0.20, sX=0.17, cW=1-2*sX-rW;
+    for (let i = 0; i < nTeeth; i++) {
+      surface += `${i?'L':'M'}${px(i,0)},${Yr} L${px(i,rW)},${Yr} L${px(i,rW+sX)},${Yc} L${px(i,rW+sX+cW)},${Yc} `;
+    }
+    surface += `L${px(nTeeth,0)},${Yr}`;
+
+  } else if (profile === 'buttress') {
+    const rW=0.18, stX=0.10, cW=0.32;
+    for (let i = 0; i < nTeeth; i++) {
+      surface += `${i?'L':'M'}${px(i,0)},${Yr} L${px(i,rW)},${Yr} L${px(i,rW+stX)},${Yc} L${px(i,rW+stX+cW)},${Yc} `;
+    }
+    surface += `L${px(nTeeth,0)},${Yr}`;
+
+  } else if (profile === 'square0') {
+    for (let i = 0; i < nTeeth; i++) {
+      surface += `${i?'L':'M'}${px(i,0)},${Yr} L${px(i,.5)},${Yr} L${px(i,.5)},${Yc} L${px(i,1)},${Yc} `;
+    }
+    surface += `L${px(nTeeth,0)},${Yr}`;
+
+  } else if (profile === 'knuckle30') {
+    for (let i = 0; i < nTeeth; i++) {
+      if (!i) surface += `M${px(i,0)},${Yr} `;
+      surface += `C${px(i,.25)},${Yr} ${px(i,.25)},${Yc} ${px(i,.5)},${Yc} C${px(i,.75)},${Yc} ${px(i,.75)},${Yr} ${px(i,1)},${Yr} `;
+    }
+  }
+
+  const x1 = x0.toFixed(1);
+  const xN = (x0 + drawW).toFixed(1);
+  const fillPath = `${surface} L${xN},${Ybase} L${x1},${Ybase} Z`;
+  const paMid  = ((x0 + x0 + P) / 2).toFixed(1);
+  const paX2   = (x0 + P).toFixed(1);
+
+  const nptNote = profile === 'npt60'
+    ? `<text x="${(x0+drawW/2).toFixed(1)}" y="${padT-8}" text-anchor="middle" font-size="9" fill="var(--orange)" font-weight="600" font-style="italic">tapered body (1:16)</text>`
+    : '';
+
+  return `<svg viewBox="0 0 ${VW} ${VH}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+  <defs>
+    <pattern id="ref-hatch" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="5" stroke="var(--accent2)" stroke-width="1.2" opacity="0.25"/>
+    </pattern>
+  </defs>
+  <path d="${fillPath}" fill="url(#ref-hatch)"/>
+  <path d="${fillPath}" fill="var(--accent2)" fill-opacity="0.10"/>
+  <path d="${surface}" fill="none" stroke="var(--accent2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="${x0-6}" y1="${Yc}" x2="${xN}" y2="${Yc}" stroke="var(--green)" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="${x0-8}" y="${Yc}" text-anchor="end" font-size="9" fill="var(--green)" dominant-baseline="middle" font-weight="600">Ø maj</text>
+  <line x1="${x0-6}" y1="${Yr}" x2="${xN}" y2="${Yr}" stroke="var(--blue)" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="${x0-8}" y="${Yr}" text-anchor="end" font-size="9" fill="var(--blue)" dominant-baseline="middle" font-weight="600">Ø min</text>
+  <text x="${paMid}" y="${paY-5}" text-anchor="middle" font-size="10" fill="var(--text2)" font-weight="700">P</text>
+  <line x1="${x0}" y1="${paY}" x2="${paX2}" y2="${paY}" stroke="var(--text3)" stroke-width="1"/>
+  <line x1="${x0}" y1="${paY-3}" x2="${x0}" y2="${paY+3}" stroke="var(--text3)" stroke-width="1"/>
+  <line x1="${paX2}" y1="${paY-3}" x2="${paX2}" y2="${paY+3}" stroke="var(--text3)" stroke-width="1"/>
+  <polygon points="${x0},${paY} ${x0+5},${paY-2.5} ${x0+5},${paY+2.5}" fill="var(--text3)"/>
+  <polygon points="${paX2},${paY} ${(x0+P-5).toFixed(1)},${paY-2.5} ${(x0+P-5).toFixed(1)},${paY+2.5}" fill="var(--text3)"/>
+  ${nptNote}
+</svg>`;
 }
 
 function renderRefTabs() {
@@ -2220,6 +2441,29 @@ function renderRefTable() {
   const threads = DB.filter(t => t.std === activeRefTab);
   const meta = STANDARDS[activeRefTab] || {};
   const showTPI = !['M','MF','Square','Knuckle'].includes(activeRefTab);
+
+  // Render diagram
+  const diagramEl = document.getElementById('ref-diagram');
+  if (meta) {
+    const angleTxt = meta.angle === 0 ? '0° (Square flanks)' : `${meta.angle}° thread angle`;
+    const noteMap = {
+      npt60: 'Tapered 1:16 per side',
+      buttress: 'Asymmetric: 7° load / 45° clearance',
+      square0: 'Parallel flanks — no wedging action',
+      knuckle30: 'Rounded crests & roots (DIN 405)',
+    };
+    const note = noteMap[meta.profile] || '';
+    diagramEl.innerHTML = `<div class="ref-diagram-wrap">
+      ${buildThreadDiagramSVG(activeRefTab)}
+      <div class="ref-diagram-meta">
+        <span class="ref-diagram-desc">${meta.full} · ${meta.desc}</span>
+        <span class="ref-diagram-angle">${angleTxt}</span>
+        ${note ? `<span class="ref-diagram-note">${note}</span>` : ''}
+      </div>
+    </div>`;
+  } else {
+    diagramEl.innerHTML = '';
+  }
 
   const thead = document.getElementById('ref-thead');
   const tbody = document.getElementById('ref-tbody');
