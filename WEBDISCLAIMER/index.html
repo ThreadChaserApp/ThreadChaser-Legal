@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disclaimer – ThreadChaser</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #1a1a2e;
+      background: #f5f7fa;
+    }
+    header {
+      background: linear-gradient(135deg, #093080 0%, #1565d0 100%);
+      color: #fff;
+      padding: 48px 24px 40px;
+      text-align: center;
+    }
+    header h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
+    header p  { margin-top: 8px; font-size: 0.95rem; opacity: 0.85; }
+    main {
+      max-width: 820px;
+      margin: 40px auto;
+      padding: 0 24px 60px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 40px 48px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0d3b9e;
+      margin-top: 36px;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #e8edf7;
+    }
+    h2:first-of-type { margin-top: 0; }
+    p { margin-bottom: 14px; }
+    p:last-child { margin-bottom: 0; }
+    ul { margin: 10px 0 14px 22px; }
+    li { margin-bottom: 6px; }
+    strong { color: #0d3b9e; }
+    a { color: #1565d0; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .warn {
+      background: #fff8e1;
+      border-left: 4px solid #f59e0b;
+      border-radius: 0 8px 8px 0;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 0.95rem;
+    }
+    .warn strong { color: #92400e; }
+    .critical {
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      border-radius: 0 8px 8px 0;
+      padding: 16px 18px;
+      margin: 20px 0;
+      font-size: 0.95rem;
+    }
+    .critical strong { color: #991b1b; }
+    .meta { font-size: 0.85rem; color: #6b7280; margin-bottom: 32px; }
+    footer {
+      text-align: center;
+      font-size: 0.82rem;
+      color: #9ca3af;
+      padding: 24px;
+    }
+    @media (max-width: 600px) {
+      .card { padding: 28px 20px; }
+      header h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>ThreadChaser — Disclaimer</h1>
+  <p>Important limitations on the use of this website and its outputs.</p>
+</header>
+<main>
+  <div class="card">
+    <p class="meta">
+      <strong>Effective date:</strong> Apr 2026 &nbsp;|&nbsp;
+      <strong>Last updated:</strong> Apr 2026 &nbsp;|&nbsp;
+      <strong>Version:</strong> 1.0
+    </p>
+    <div class="critical">
+      <strong>READ BEFORE USE:</strong> ThreadChaser is a reference and identification
+      aid only. Results must always be independently verified with calibrated, traceable
+      measurement instruments before any engineering, manufacturing, maintenance, or
+      safety-critical application. Do not rely solely on this website for decisions where
+      incorrect thread identification could cause injury, death, or property damage.
+    </div>
+
+    <h2>1. General Disclaimer</h2>
+    <p>
+      The information, calculations, and thread identification results provided by
+      <strong>threadchaser.com</strong> (the "Website") are furnished by
+      <strong>ThreadChaser</strong> ("Developer") on an
+      <strong>"as is" and "as available"</strong> basis, for general informational and
+      reference purposes only.
+    </p>
+    <p>
+      Nothing on the Website constitutes professional engineering advice, certified
+      metrology output, a formal conformance assessment, or a warranty of fitness for
+      any specific application or purpose. The Developer makes no representations or
+      warranties, express or implied, as to the accuracy, reliability, completeness,
+      or suitability of any information or result produced by the Website.
+    </p>
+
+    <h2>2. No Engineering or Professional Advice</h2>
+    <p>
+      ThreadChaser is not a substitute for qualified engineering judgment. Thread
+      identification and selection for any structural, mechanical, pressure-containment,
+      safety-critical, or load-bearing application must be carried out or reviewed by a
+      suitably qualified engineer or technician using certified instruments and applicable
+      technical standards.
+    </p>
+    <p>
+      The Developer is not a registered engineering firm and no content on the Website
+      should be interpreted as constituting engineering advice or opinion.
+    </p>
+
+    <h2>3. Measurement Accuracy and Database Limitations</h2>
+    <p>
+      Thread matching results are computed by comparing user-entered dimensions against a
+      reference database of nominal thread values. The accuracy of any result is therefore
+      subject to:
+    </p>
+    <ul>
+      <li>The accuracy and calibration of the measuring instruments used by the user;</li>
+      <li>The accuracy of the values entered by the user;</li>
+      <li>The inherent tolerance bands of each thread standard, which the Website
+          approximates but does not formally model in their entirety;</li>
+      <li>Database currency — thread standards are periodically revised and the Website's
+          database may not reflect the most recent amendment to any given standard;</li>
+      <li>The simplified matching algorithm used, which compares major diameter and pitch
+          only and does not evaluate all tolerance parameters (e.g. pitch diameter,
+          minor diameter, surface finish, class of fit) defined by the relevant standard.</li>
+    </ul>
+    <div class="warn">
+      <strong>Always verify:</strong> A "match" indicated by ThreadChaser means only that
+      your entered measurements fall within the configured tolerance percentage of a nominal
+      standard value. It is not a certificate of conformance, and the matched standard may
+      not be the correct one for your application.
+    </div>
+
+    <h2>4. Limitation of Liability</h2>
+    <p>
+      To the maximum extent permitted by applicable law, the Developer expressly excludes
+      all liability for any loss or damage of any kind — including but not limited to:
+    </p>
+    <ul>
+      <li>Personal injury or death;</li>
+      <li>Property damage or destruction;</li>
+      <li>Equipment failure, mechanical failure, or structural failure;</li>
+      <li>Economic loss, loss of profits, loss of business, or loss of data;</li>
+      <li>Any consequential, indirect, incidental, punitive, or special damages —</li>
+    </ul>
+    <p>arising directly or indirectly from:</p>
+    <ul>
+      <li>Reliance on any thread identification result, measurement, or recommendation
+          produced by the Website;</li>
+      <li>Errors, omissions, or inaccuracies in the Website's reference database;</li>
+      <li>Use of the Website in connection with any engineering, manufacturing, repair,
+          maintenance, or safety-critical work;</li>
+      <li>Any failure of the Website to correctly identify a thread standard;</li>
+      <li>The use of incorrectly identified or mismatched threads in any application.</li>
+    </ul>
+    <p>
+      This limitation of liability applies regardless of the form of action — whether in
+      contract, tort (including negligence), strict liability, or otherwise — and even if
+      the Developer has been advised of the possibility of such damages.
+    </p>
+    <p>
+      In jurisdictions that do not permit the complete exclusion of liability, the
+      Developer's total liability shall be limited to the fullest extent permitted by law
+      and in no event shall exceed AU$1.00.
+    </p>
+
+    <h2>5. Third-Party Standards and Intellectual Property</h2>
+    <p>
+      The thread standards referenced on the Website (including ISO, ASME, BS, ANSI, ASA,
+      DIN, and others) are the intellectual property of their respective issuing bodies.
+      ThreadChaser references publicly available nominal dimensional data from these
+      standards for informational purposes. The Developer is not affiliated with, endorsed
+      by, or acting on behalf of any standards organisation.
+    </p>
+    <p>
+      Users requiring definitive or legally compliant dimensional data should obtain and
+      consult the current published edition of the relevant standard directly from the
+      issuing body (e.g. ISO, ASME, BSI, ANSI, DIN).
+    </p>
+
+    <h2>6. User Responsibility</h2>
+    <p>
+      By using ThreadChaser, you acknowledge and agree that:
+    </p>
+    <ul>
+      <li>You are solely responsible for verifying all thread identifications with
+          appropriate calibrated instruments before acting on them;</li>
+      <li>You are solely responsible for ensuring that any thread selected or used in
+          your application is appropriate for its intended purpose, load, environment,
+          and regulatory requirements;</li>
+      <li>You have the skills and knowledge necessary to interpret the Website's output
+          correctly in the context of your specific application;</li>
+      <li>You will seek the advice of a qualified engineer or inspector whenever there
+          is any doubt about thread identification, compatibility, or suitability;</li>
+      <li>You will not use this Website as the sole or primary basis for any
+          safety-critical decision.</li>
+    </ul>
+
+    <h2>7. Website Availability</h2>
+    <p>
+      The Developer does not warrant that the Website will be available at all times,
+      that it will be free from errors or bugs, or that it will continue to be supported
+      or updated. The Website is hosted on GitHub Pages and may be subject to that
+      platform's availability and maintenance windows. The Developer is not liable for
+      any inconvenience or loss arising from unavailability of the Website.
+    </p>
+    <p>
+      All thread identification is performed locally in your browser. No data you enter
+      is transmitted to any server.
+    </p>
+
+    <h2>8. Governing Law</h2>
+    <p>
+      This Disclaimer is governed by the laws of <strong>The United Kingdom</strong>.
+      Nothing in this Disclaimer is intended to limit any rights you may have under
+      applicable mandatory consumer protection legislation that cannot be excluded
+      by contract.
+    </p>
+
+    <h2>9. Contact</h2>
+    <p>
+      If you have questions about this Disclaimer, please contact:
+    </p>
+    <ul>
+      <li><strong>Developer:</strong> Jamie Partovi</li>
+      <li><strong>Email:</strong> <a href="mailto:info@threadchaser.com">info@threadchaser.com</a></li>
+      <li><strong>Website:</strong> <a href="https://threadchaser.com">threadchaser.com</a></li>
+    </ul>
+  </div>
+</main>
+<footer>
+  &copy; <span id="yr"></span> ThreadChaser. All rights reserved. &nbsp;|&nbsp;
+  <a href="/WEBTERMS">Terms of Use</a> &nbsp;|&nbsp;
+  <a href="PRIVACY.html">Privacy Policy</a>
+</footer>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>
