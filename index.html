@@ -1060,10 +1060,10 @@
 
     <!-- Internal: minor diameter field -->
     <div id="field-minor" class="input-group mt8 hidden">
-      <div class="input-label">Minor Diameter (mm)</div>
+      <div class="input-label" id="label-minor">Minor Diameter (mm)</div>
       <div class="input-wrap" id="wrap-minor">
         <input type="number" inputmode="decimal" id="inp-minor" placeholder="e.g. 8.376" step="any" min="0" />
-        <span class="input-unit">mm</span>
+        <span class="input-unit" id="unit-minor">mm</span>
       </div>
       <div class="input-hint">Measure the smallest diameter of the thread bore</div>
     </div>
@@ -1744,8 +1744,14 @@ function convertInputs(oldUnit, newUnit) {
 
   const major = parseFloat(state.majorText);
   if (major > 0) {
-    let mm = oldUnit === 'inch' ? major * 25.4 : major;
+    const mm = oldUnit === 'inch' ? major * 25.4 : major;
     state.majorText = newUnit === 'inch' ? trimNum(mm/25.4,4) : trimNum(mm,3);
+  }
+
+  const minor = parseFloat(state.minorText);
+  if (minor > 0) {
+    const mm = oldUnit === 'inch' ? minor * 25.4 : minor;
+    state.minorText = newUnit === 'inch' ? trimNum(mm/25.4,4) : trimNum(mm,3);
   }
 
   const pitch = parseFloat(state.pitchText);
@@ -1914,16 +1920,22 @@ function updateToleranceDisplay() {
 
 function updateUnitLabels() {
   const u = state.inputUnit;
-  const dLabel = u === 'inch' ? 'Major Diameter (inches)' : 'Major Diameter (mm)';
-  const pLabel = u === 'mm' ? 'Pitch (mm)' : 'Pitch (inches)';
-  const dUnit  = u === 'inch' ? '"' : 'mm';
-  const pUnit  = u === 'inch' ? '"' : 'mm';
-  const dPH    = u === 'inch' ? 'e.g. 0.394' : 'e.g. 10.0';
-  const pPH    = u === 'mm'   ? 'e.g. 1.25'  : 'e.g. 0.05';
+  const isInch = u === 'inch';
+  const dLabel = isInch ? 'Major Diameter (inches)' : 'Major Diameter (mm)';
+  const mLabel = isInch ? 'Minor Diameter (inches)' : 'Minor Diameter (mm)';
+  const pLabel = isInch ? 'Pitch (inches)' : 'Pitch (mm)';
+  const dUnit  = isInch ? '"' : 'mm';
+  const pUnit  = isInch ? '"' : 'mm';
+  const dPH    = isInch ? 'e.g. 0.394' : 'e.g. 10.0';
+  const mPH    = isInch ? 'e.g. 0.330' : 'e.g. 8.376';
+  const pPH    = isInch ? 'e.g. 0.05'  : 'e.g. 1.25';
 
   document.getElementById('label-major').textContent = dLabel;
   document.getElementById('unit-major').textContent  = dUnit;
   document.getElementById('inp-major').placeholder   = dPH;
+  document.getElementById('label-minor').textContent = mLabel;
+  document.getElementById('unit-minor').textContent  = dUnit;
+  document.getElementById('inp-minor').placeholder   = mPH;
   document.getElementById('label-pitch').textContent = pLabel;
   document.getElementById('unit-pitch').textContent  = pUnit;
   document.getElementById('inp-pitch').placeholder   = pPH;
@@ -2588,6 +2600,7 @@ document.addEventListener('DOMContentLoaded', () => {
     state.prevUnit  = newUnit;
     // sync input fields
     document.getElementById('inp-major').value = state.majorText;
+    document.getElementById('inp-minor').value = state.minorText;
     document.getElementById('inp-pitch').value = state.pitchText;
     document.querySelectorAll('#unit-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.unit === newUnit));
     updateUnitLabels();
@@ -2677,6 +2690,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
 
