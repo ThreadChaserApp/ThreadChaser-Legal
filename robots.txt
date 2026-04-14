@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://threadchaser.com/sitemap.xml
