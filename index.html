@@ -48,6 +48,80 @@
   }
   </script>
 
+  <!-- ── FAQ Structured Data ── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I identify a screw thread?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "To identify a screw thread: (1) Measure the major (outer) diameter of the bolt or stud using calipers. (2) Measure the thread pitch using a thread pitch gauge, or count the number of thread crests over 25.4 mm (1 inch) to get TPI. (3) Enter both measurements into a thread identifier tool like ThreadChaser to match against all known thread standards automatically."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I measure thread pitch without a gauge?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Without a pitch gauge, place the bolt against a ruler and count the number of thread crests over exactly 1 inch — this gives you TPI (threads per inch). For metric threads, count the crests over 10 mm and multiply by 10 to get pitch in mm. Alternatively, press the thread into a soft material like lead or putty and measure the impression."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the difference between metric and imperial threads?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Metric threads (ISO, M series) are measured in millimetres. Their pitch is the distance between thread crests in mm — for example, M10×1.5 means 10 mm diameter with 1.5 mm between threads. Imperial threads (UNC, UNF, BSW, BSF) are measured in inches, and pitch is expressed as TPI (threads per inch) — for example, 3/8-16 UNC means 3/8 inch diameter with 16 threads per inch."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is BSP the same as NPT?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. BSP (British Standard Pipe) and NPT (National Pipe Taper) are not interchangeable. BSP uses a 55° thread angle and is common in the UK, Europe, and Australia. NPT uses a 60° thread angle and is the standard in North America. While their diameters may appear similar, the different thread angles mean BSP and NPT fittings will not seal correctly when mixed."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I tell the difference between UNC and UNF threads?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "UNC (Unified National Coarse) and UNF (Unified National Fine) threads have the same thread angle (60°) but different pitches. At any given diameter, UNF has more threads per inch than UNC. For example, a 1/2 inch bolt: UNC is 1/2-13 (13 TPI) while UNF is 1/2-20 (20 TPI). Measure the TPI carefully — a thread gauge or ThreadChaser can distinguish them instantly."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What thread is on a standard bolt?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "In the UK and Europe, most standard bolts use Metric Coarse (ISO) threads — for example M6, M8, M10, M12. In North America, UNC (Unified National Coarse) is most common for general fasteners. Older British equipment may use BSW (Whitworth) or BSF threads. Pipe fittings use BSP (UK/Europe) or NPT (North America). When in doubt, measure the diameter and pitch and use a thread identifier to confirm the standard."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I identify threads without a thread gauge?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Using digital calipers you can measure the major diameter of a bolt and estimate the pitch by counting thread crests along a known length. Enter these measurements into ThreadChaser and it will match your dimensions against over 300 thread sizes across 16 international standards — no physical thread gauge required."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the tapping drill size for a thread?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The tapping drill size is the drill bit diameter used to create a hole before cutting an internal thread with a tap. It is slightly smaller than the thread's major diameter, leaving enough material for the tap to cut threads. ThreadChaser automatically displays the recommended tapping drill size for every matched thread standard."
+        }
+      }
+    ]
+  }
+  </script>
+
   <style>
     /* =====================================================================
        CSS VARIABLES & RESET
@@ -428,6 +502,65 @@
 
     .how-to-steps strong { font-size: 13px; font-weight: 600; display: block; margin-bottom: 2px; }
     .how-to-steps p { font-size: 13px; color: var(--text2); line-height: 1.8; margin: 0; }
+
+    /* =====================================================================
+       FAQ SECTION
+    ===================================================================== */
+    .faq-section { margin-top: 16px; }
+    .faq-section h2 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      overflow: hidden;
+      background: var(--card);
+    }
+
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .faq-question:hover { background: var(--card2); }
+
+    .faq-chevron {
+      width: 15px; height: 15px; flex-shrink: 0;
+      fill: none; stroke: var(--text3); stroke-width: 2.5;
+      stroke-linecap: round; stroke-linejoin: round;
+      transition: transform .2s;
+    }
+    .faq-question[aria-expanded="true"] .faq-chevron { transform: rotate(180deg); }
+
+    .faq-answer {
+      display: none;
+      padding: 0 16px 14px;
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.75;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+    }
+    .faq-answer.open { display: block; }
+
+    /* =====================================================================
+       SEO GUIDE SECTION
+    ===================================================================== */
+    .seo-section { margin-top: 16px; }
+    .seo-section h2 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .seo-section h3 { font-size: 13px; font-weight: 600; color: var(--text); margin: 14px 0 6px; }
+    .seo-section p  { font-size: 13px; color: var(--text2); line-height: 1.75; margin-bottom: 8px; }
 
     .quality-pill {
       display: inline-flex;
@@ -1177,16 +1310,130 @@
 
   <!-- Static SEO content — always visible to search engines -->
   <section style="margin-top:32px;padding:20px;background:var(--card);border-radius:12px;box-shadow:var(--shadow-sm);">
-    <h2 style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;">About This Thread Identifier Tool</h2>
-    <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:10px;">
-      ThreadChaser is a free online tool to <strong>identify screw threads from measurements</strong>. Measure your bolt, screw, or threaded hole with calipers or a thread pitch gauge, enter the dimensions, and the tool instantly identifies the matching thread standard from a database of over 300 thread sizes. It is the fastest way to <strong>identify a thread from measurements</strong> without needing a full set of thread gauges.
-    </p>
-    <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:10px;">
-      Supported thread standards include <strong>Metric Coarse (ISO 724)</strong>, <strong>Metric Fine</strong>, <strong>UNC</strong> (Unified National Coarse), <strong>UNF</strong> (Unified National Fine), <strong>UNEF</strong> (Unified Extra Fine), <strong>BSP</strong> (British Standard Pipe), <strong>BSW</strong> (Whitworth), <strong>BSF</strong> (British Standard Fine), <strong>BA</strong> (British Association), <strong>NPT</strong> (National Pipe Taper), <strong>ANC</strong>, <strong>ANF</strong>, <strong>ACME</strong>, <strong>Buttress</strong>, <strong>Square</strong>, and <strong>Knuckle (DIN 405)</strong>.
-    </p>
-    <p style="font-size:13px;color:var(--text2);line-height:1.7;">
-      Use it to identify external threads on bolts and studs, or internal threads in nuts and tapped holes. Works in millimetres, inches, and TPI (threads per inch). Results are ranked by match quality with full dimensional data including major diameter, pitch diameter, minor diameter, pitch, and tapping drill size.
-    </p>
+
+    <div class="seo-section">
+      <h2>About This Thread Identifier Tool</h2>
+      <p>
+        ThreadChaser is a free online tool to <strong>identify screw threads from measurements</strong>. Measure your bolt, screw, or threaded hole with digital calipers and a thread pitch gauge, enter the dimensions, and the tool instantly identifies the matching thread standard from a database of over 300 thread sizes across 16 international standards. It is the fastest way to <strong>identify a thread from measurements</strong> without needing a full physical set of thread gauges.
+      </p>
+      <p>
+        Unlike static thread charts, ThreadChaser accepts your actual measurements and scores every possible match by how closely the diameter and pitch align — so even if your calipers are slightly off, you still get the right result. Results are ranked <strong>Excellent</strong>, <strong>Good</strong>, <strong>Acceptable</strong>, or <strong>Poor</strong>, with full dimensional data for each match including major diameter, pitch diameter, minor diameter, and the recommended tapping drill size.
+      </p>
+
+      <h3>Supported Thread Standards</h3>
+      <p>
+        <strong>Metric Coarse (ISO 724)</strong> — the most common thread worldwide, used on most modern bolts and machinery.<br>
+        <strong>Metric Fine (MF)</strong> — finer pitch metric threads used in precision applications and automotive components.<br>
+        <strong>UNC</strong> (Unified National Coarse) — the standard coarse thread in North America, used on most inch-measure fasteners.<br>
+        <strong>UNF</strong> (Unified National Fine) — finer pitch unified thread, common in automotive and aerospace.<br>
+        <strong>UNEF</strong> (Unified Extra Fine) — very fine unified threads for thin-walled components.<br>
+        <strong>BSP</strong> (British Standard Pipe, 55°) — standard pipe thread in the UK, Europe, and Australia.<br>
+        <strong>BSW</strong> (British Standard Whitworth) — the original British standard thread, found on older machinery and classic vehicles.<br>
+        <strong>BSF</strong> (British Standard Fine) — fine-pitch Whitworth threads, common on pre-1970s British vehicles.<br>
+        <strong>BA</strong> (British Association) — very small threads used in instruments, electrical equipment, and model engineering.<br>
+        <strong>NPT</strong> (National Pipe Taper, 60°) — American tapered pipe thread standard, not interchangeable with BSP.<br>
+        <strong>ANC / ANF</strong> (Army-Navy Coarse / Fine) — older American aerospace and military thread standards.<br>
+        <strong>ACME</strong> — trapezoidal threads used in lead screws, jacks, and linear motion applications.<br>
+        <strong>Buttress</strong> — asymmetric threads designed to withstand high axial force in one direction.<br>
+        <strong>Square</strong> — square-section threads used in vices and heavy-duty power transmission.<br>
+        <strong>Knuckle (DIN 405)</strong> — rounded-profile threads used in bottle caps, fire hose couplings, and industrial connectors.
+      </p>
+
+      <h3>How to Identify a Thread From Measurements</h3>
+      <p>
+        The most reliable way to identify an unknown thread without a gauge is to measure two things: the <strong>major diameter</strong> (the outer diameter of a bolt, or the inner diameter of a nut) and the <strong>pitch</strong> (the distance between thread crests in mm, or thread count in TPI). Together these two measurements uniquely identify virtually every common thread type. A good set of digital calipers accurate to 0.01 mm is all you need for most identifications.
+      </p>
+      <p>
+        If you don't have a pitch gauge, count the number of complete thread crests over exactly one inch (25.4 mm) — this gives you the TPI directly. For metric threads, count over 10 mm and multiply by 10 to get pitch in mm. Enter these values into the form above and hit <strong>Identify Thread</strong>.
+      </p>
+
+      <h3>Metric vs Imperial Thread Identification</h3>
+      <p>
+        A common source of confusion is whether an unknown fastener is metric or imperial. The quickest test: measure the major diameter and check if it falls on a clean metric number (e.g. 6.0, 8.0, 10.0 mm) or a clean fraction (e.g. 1/4", 3/8", 1/2"). If neither fits, it may be a Whitworth (BSW/BSF) or BA thread. BSP and NPT pipe threads add another layer of complexity — they are nominally sized by bore diameter, not the thread OD, which means a ½" BSP fitting has a thread major diameter of approximately 20.9 mm. ThreadChaser handles all of these automatically.
+      </p>
+
+      <h3>Identify Internal Threads (Nuts and Tapped Holes)</h3>
+      <p>
+        Switch to <strong>Internal</strong> mode to identify threads in nuts, tapped holes, and threaded bores. Measure the minor (inner) diameter of the hole and the pitch, then enter them into the tool. ThreadChaser matches against all internal thread standards and also displays the tapping drill size — the drill bit needed to create the pilot hole before tapping.
+      </p>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+      <h2>Frequently Asked Questions</h2>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" data-faq="0">
+          How do I identify a screw thread?
+          <svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-0">
+          Measure the <strong>major diameter</strong> of the bolt (or minor diameter of the hole) with calipers, then measure the <strong>pitch</strong> — either with a pitch gauge or by counting crests per inch (TPI). Enter both values into ThreadChaser and it will instantly match your dimensions against all known thread standards.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" data-faq="1">
+          How do I measure thread pitch without a gauge?
+          <svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-1">
+          Place the bolt against a ruler and count the number of thread crests over exactly <strong>1 inch</strong> — this gives you TPI. For metric threads, count crests over <strong>10 mm</strong> and multiply by 10 to get pitch in mm. Alternatively, press the thread into a soft material and measure the impression.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" data-faq="2">
+          What is the difference between metric and imperial threads?
+          <svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-2">
+          Metric threads (M series) are measured in millimetres — pitch is the distance between crests in mm (e.g. M10×1.5 = 10 mm diameter, 1.5 mm pitch). Imperial threads (UNC, UNF, BSW) are measured in inches with pitch expressed as TPI (e.g. 3/8-16 UNC = 3/8 inch diameter, 16 threads per inch). They are not interchangeable.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" data-faq="3">
+          Is BSP the same as NPT?
+          <svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-3">
+          No — BSP and NPT are <strong>not interchangeable</strong>. BSP uses a 55° thread angle (common in the UK, Europe, and Australia). NPT uses a 60° thread angle (North American standard). Even where diameters appear similar, mixing them will not produce a reliable seal.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" data-faq="4">
+          How do I tell the difference between UNC and UNF?
+          <svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-4">
+          UNC and UNF have the same 60° thread angle but different pitches. At any given diameter, UNF has <strong>more threads per inch</strong> than UNC. For example: ½ inch UNC is 13 TPI, while ½ inch UNF is 20 TPI. Measure the TPI carefully — ThreadChaser will distinguish them instantly.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" data-faq="5">
+          What is the tapping drill size for a thread?
+          <svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-5">
+          The tapping drill size is the drill bit diameter needed to create a pilot hole before cutting an internal thread with a tap. It is slightly smaller than the thread's major diameter, leaving material for the tap to cut. ThreadChaser displays the recommended tapping drill size for every matched thread standard automatically.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" data-faq="6">
+          Can I identify threads without a thread gauge?
+          <svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-6">
+          Yes. Using digital calipers you can measure the major diameter and estimate the pitch by counting crests along a known length. Enter these into ThreadChaser and it matches against over 300 thread sizes across 16 international standards — no physical gauge required.
+        </div>
+      </div>
+
+    </div><!-- /faq-section -->
+
   </section>
 
   <p class="disclaimer-note">
@@ -2590,6 +2837,27 @@ document.addEventListener('DOMContentLoaded', () => {
     body.classList.toggle('open', !open);
   });
 
+  // FAQ accordion
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx    = btn.getAttribute('data-faq');
+      const answer = document.getElementById('faq-' + idx);
+      const open   = btn.getAttribute('aria-expanded') === 'true';
+      // close all others
+      document.querySelectorAll('.faq-question').forEach(b => {
+        b.setAttribute('aria-expanded', 'false');
+      });
+      document.querySelectorAll('.faq-answer').forEach(a => {
+        a.classList.remove('open');
+      });
+      // toggle this one
+      if (!open) {
+        btn.setAttribute('aria-expanded', 'true');
+        answer.classList.add('open');
+      }
+    });
+  });
+
   // Unit segmented control
   document.getElementById('unit-seg').addEventListener('click', e => {
     const btn = e.target.closest('[data-unit]');
@@ -2690,7 +2958,6 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
 
 
 
